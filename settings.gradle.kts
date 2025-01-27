@@ -21,4 +21,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "News App Case Study"
 include(":app")
- 
+include(":news:data")
+include(":news:domain")
+include(":news:presentation")
+include(":core:presentation")
+include(":core:domain")
+include(":core:data")
+include(":favorites:presentation")
+include(":favorites:data")
+include(":favorites:domain")

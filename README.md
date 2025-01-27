@@ -1,1 +1,1 @@
-# news-app-case-study
+# News App, Case Study
