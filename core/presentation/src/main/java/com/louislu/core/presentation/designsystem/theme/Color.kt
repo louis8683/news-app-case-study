@@ -1,4 +1,4 @@
-package com.louislu.newsappcasestudy.ui.theme
+package com.louislu.core.presentation.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

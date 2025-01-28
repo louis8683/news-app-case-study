@@ -19,7 +19,9 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "News App Case Study"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+rootProject.name = "News-App-Case-Study"
 include(":app")
 include(":news:data")
 include(":news:domain")

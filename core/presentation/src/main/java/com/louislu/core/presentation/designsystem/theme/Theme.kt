@@ -1,6 +1,5 @@
-package com.louislu.newsappcasestudy.ui.theme
+package com.louislu.core.presentation.designsystem.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

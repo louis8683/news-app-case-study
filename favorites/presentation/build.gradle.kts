@@ -40,4 +40,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(projects.favorites.domain)
+    implementation(projects.core.domain)
+    implementation(projects.core.presentation)
 }
