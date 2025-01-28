@@ -8,15 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -25,7 +22,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardElevation
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -52,6 +47,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.louislu.core.presentation.designsystem.theme.NewsAppCaseStudyTheme
 import com.louislu.core.presentation.font.Fonts
+import com.louislu.news.domain.model.News
 import com.louislu.news.presentation.R
 
 
@@ -97,7 +93,7 @@ fun MainScreen(
                     onAction(MainAction.OnFilterUpdate(selection))
                 }
             )
-            ScrollableCards()
+            ScrollableCards(state = state)
         }
 
     }
@@ -150,9 +146,9 @@ fun ChipGroup(
 }
 
 @Composable
-fun ScrollableCards() {
-    var cardItems = (1..10).map { "Card #$it" }
-
+fun ScrollableCards(
+    state: MainState
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -160,20 +156,16 @@ fun ScrollableCards() {
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        cardItems.forEachIndexed { index, cardText ->
+        state.newList.forEachIndexed { index, news ->
             if (index == 0) {
                 CustomCardLarge(
-                    onlineImageUrl = "https://static01.nyt.com/images/2025/01/27/multimedia/27DEEPSEEK-EXPLAINER-1-01-hpmc/27DEEPSEEK-EXPLAINER-1-01-hpmc-superJumbo.jpg?quality=75&auto=webp",
-                    localImageRes = R.drawable.wsj_logo,
-                    title = "Trump says he will impose 25% tariffs on Colombia in showdown over deportation flights",
+                    news = news,
                     onClick = {}
                 )
             }
             else {
                 CustomCardSmall(
-                    onlineImageUrl = "https://static01.nyt.com/images/2025/01/27/multimedia/27DEEPSEEK-EXPLAINER-1-01-hpmc/27DEEPSEEK-EXPLAINER-1-01-hpmc-superJumbo.jpg?quality=75&auto=webp",
-                    localImageRes = R.drawable.wsj_logo,
-                    title = "Trump says he will impose 25% tariffs on Colombia in showdown over deportation flights",
+                    news = news,
                     onClick = {}
                 )
             }
@@ -199,11 +191,12 @@ fun BottomNavBar() {
 
 @Composable
 fun CustomCardLarge(
-    onlineImageUrl: String,
-    localImageRes: Int,
-    title: String,
+    news: News,
     onClick: () -> Unit,
 ) {
+    // TODO: map the news source to the local image of the publisher
+    val localImageRes =  R.drawable.wsj_logo
+
     Card(
         shape = RoundedCornerShape(12.dp),
         onClick = onClick
@@ -214,7 +207,7 @@ fun CustomCardLarge(
         ) {
             // Online image
             AsyncImage(
-                model = onlineImageUrl,
+                model = news.urlToImage,
                 contentDescription = "Online Image",
                 modifier = Modifier
                     .fillMaxWidth()
@@ -242,7 +235,7 @@ fun CustomCardLarge(
                     .padding(8.dp)
             ) {
                 Text(
-                    text = title,
+                    text = news.title ?: "Title not available",
                     modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Start,
@@ -255,11 +248,12 @@ fun CustomCardLarge(
 
 @Composable
 fun CustomCardSmall(
-    onlineImageUrl: String,
-    localImageRes: Int,
-    title: String,
+    news: News,
     onClick: () -> Unit,
 ) {
+    // TODO: map the news source to the local image of the publisher
+    val localImageRes =  R.drawable.wsj_logo
+
     Card(
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth(),
@@ -287,7 +281,7 @@ fun CustomCardSmall(
 
                 // Text
                 Text(
-                    text = title,
+                    text = news.title ?: "Title not available",
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
@@ -296,7 +290,7 @@ fun CustomCardSmall(
 
             // Online image
             AsyncImage(
-                model = onlineImageUrl,
+                model = news.urlToImage,
                 contentDescription = "Online Image",
                 modifier = Modifier
                     .fillMaxHeight()
@@ -310,9 +304,24 @@ fun CustomCardSmall(
 @Preview
 @Composable
 private fun MainScreenPreview() {
+    val news = News(
+        sourceId = "bloomberg",
+        sourceName = "Bloomberg",
+        author = "Stephanie Lai, Josh Wingrove",
+        title = "Trump Says Microsoft Eyeing TikTok Bid With App’s Future in US Unclear - Bloomberg",
+        description = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.’s TikTok, President Donald Trump said Monday night, without elaborating.",
+        url = "https://www.bloomberg.com/news/articles/2025-01-28/trump-says-microsoft-eyeing-tiktok-bid-with-app-s-future-unclear",
+        urlToImage = "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iAUVtbQTpnv8/v1/1200x800.jpg",
+        publishedAt = "2025-01-28T02:44:00Z",
+        content = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.s TikTok, President Donald Trump said Monday night, without elaborating.\\r\\nI would say yes, Trump told reporters aboard Air Force One… [+124 chars]"
+    )
+
     NewsAppCaseStudyTheme {
         MainScreen (
-            state = MainState("All"),
+            state = MainState(
+                listOf(news, news, news),
+                "All"
+            ),
             onAction = {},
             filters = listOf("All", "Headlines", "Politics", "Tech", "Climate", "Sports", "Lifestyle", "World", "Business")
         )
