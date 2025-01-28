@@ -64,10 +64,15 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
 
     implementation(libs.timber)
+    
+    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
 
     implementation(projects.news.domain)
     implementation(projects.core.domain)

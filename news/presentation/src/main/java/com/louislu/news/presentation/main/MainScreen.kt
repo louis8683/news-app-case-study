@@ -1,23 +1,31 @@
 package com.louislu.news.presentation.main
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,13 +41,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import com.louislu.core.presentation.designsystem.theme.NewsAppCaseStudyTheme
 import com.louislu.core.presentation.font.Fonts
+import com.louislu.news.presentation.R
 
 
 @Composable
@@ -54,7 +67,7 @@ fun MainScreenRoot(
             when(action) {
                 MainAction.OnNewsCardClick -> onNewsCardClick()
                 is MainAction.OnFilterUpdate -> {
-                    viewModel.updateFilter(action.filter)
+                    viewModel.onAction(action)
                 }
             }
         },
@@ -147,20 +160,22 @@ fun ScrollableCards() {
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        cardItems.forEach { cardText ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { /* Handle card click */ }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Text(text = cardText, fontSize = 16.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Card description here", fontSize = 14.sp, color = Color.Gray)
-                }
+        cardItems.forEachIndexed { index, cardText ->
+            if (index == 0) {
+                CustomCardLarge(
+                    onlineImageUrl = "https://static01.nyt.com/images/2025/01/27/multimedia/27DEEPSEEK-EXPLAINER-1-01-hpmc/27DEEPSEEK-EXPLAINER-1-01-hpmc-superJumbo.jpg?quality=75&auto=webp",
+                    localImageRes = R.drawable.wsj_logo,
+                    title = "Trump says he will impose 25% tariffs on Colombia in showdown over deportation flights",
+                    onClick = {}
+                )
+            }
+            else {
+                CustomCardSmall(
+                    onlineImageUrl = "https://static01.nyt.com/images/2025/01/27/multimedia/27DEEPSEEK-EXPLAINER-1-01-hpmc/27DEEPSEEK-EXPLAINER-1-01-hpmc-superJumbo.jpg?quality=75&auto=webp",
+                    localImageRes = R.drawable.wsj_logo,
+                    title = "Trump says he will impose 25% tariffs on Colombia in showdown over deportation flights",
+                    onClick = {}
+                )
             }
         }
     }
@@ -178,6 +193,116 @@ fun BottomNavBar() {
                 onClick = { selectedIndex = index },
                 icon = { Icon(imageVector = item.second, contentDescription = item.first) },
                 label = { Text(text = item.first) })
+        }
+    }
+}
+
+@Composable
+fun CustomCardLarge(
+    onlineImageUrl: String,
+    localImageRes: Int,
+    title: String,
+    onClick: () -> Unit,
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            // Online image
+            AsyncImage(
+                model = onlineImageUrl,
+                contentDescription = "Online Image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp),
+                contentScale = ContentScale.Crop
+            )
+
+            // Local Image
+            Box(
+                modifier = Modifier
+                    .padding(8.dp, 4.dp)
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(model = localImageRes),
+                    contentDescription = "Local Image",
+                    modifier = Modifier
+                        .width(168.dp)
+                        .height(28.dp)
+                )
+            }
+
+            // Text
+            Box(
+                modifier = Modifier
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = title,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomCardSmall(
+    onlineImageUrl: String,
+    localImageRes: Int,
+    title: String,
+    onClick: () -> Unit,
+) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(16.dp),
+            ) {
+                // Local Image
+                Image(
+                    painter = rememberAsyncImagePainter(model = localImageRes),
+                    contentDescription = "Local Image",
+                    modifier = Modifier
+                        .width(168.dp)
+                        .height(28.dp)
+                )
+
+                // Text
+                Text(
+                    text = title,
+                    textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier
+                )
+            }
+
+            // Online image
+            AsyncImage(
+                model = onlineImageUrl,
+                contentDescription = "Online Image",
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(100.dp),
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }

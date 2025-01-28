@@ -16,11 +16,12 @@ class MainViewModel @Inject constructor(): ViewModel() {
         private set
 
     fun onAction(action: MainAction) {
-
-    }
-
-    fun updateFilter(filter: String) {
-        Timber.i("Filter updated to $filter")
-        mainState = mainState.copy(filter = filter)
+        when(action) {
+            is MainAction.OnFilterUpdate -> {
+                Timber.i("Filter updated to ${action.filter}")
+                mainState = mainState.copy(filter = action.filter)
+            }
+            MainAction.OnNewsCardClick -> TODO()
+        }
     }
 }
