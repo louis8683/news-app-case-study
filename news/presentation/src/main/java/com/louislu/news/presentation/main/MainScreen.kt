@@ -49,6 +49,8 @@ import com.louislu.core.presentation.designsystem.theme.NewsAppCaseStudyTheme
 import com.louislu.core.presentation.font.Fonts
 import com.louislu.news.domain.model.News
 import com.louislu.news.presentation.R
+import java.time.Instant
+import java.time.ZoneId
 
 
 @Composable
@@ -156,7 +158,7 @@ fun ScrollableCards(
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        state.newList.forEachIndexed { index, news ->
+        state.newsList.forEachIndexed { index, news ->
             if (index == 0) {
                 CustomCardLarge(
                     news = news,
@@ -235,7 +237,7 @@ fun CustomCardLarge(
                     .padding(8.dp)
             ) {
                 Text(
-                    text = news.title ?: "Title not available",
+                    text = news.title.ifEmpty { "Title not available" },
                     modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Start,
@@ -281,7 +283,7 @@ fun CustomCardSmall(
 
                 // Text
                 Text(
-                    text = news.title ?: "Title not available",
+                    text = news.title.ifEmpty { "Title not available" },
                     textAlign = TextAlign.Start,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
@@ -312,7 +314,7 @@ private fun MainScreenPreview() {
         description = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.’s TikTok, President Donald Trump said Monday night, without elaborating.",
         url = "https://www.bloomberg.com/news/articles/2025-01-28/trump-says-microsoft-eyeing-tiktok-bid-with-app-s-future-unclear",
         urlToImage = "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iAUVtbQTpnv8/v1/1200x800.jpg",
-        publishedAt = "2025-01-28T02:44:00Z",
+        publishedAt = Instant.parse("2025-01-28T02:44:00Z").atZone(ZoneId.of("UTC")),
         content = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.s TikTok, President Donald Trump said Monday night, without elaborating.\\r\\nI would say yes, Trump told reporters aboard Air Force One… [+124 chars]"
     )
 

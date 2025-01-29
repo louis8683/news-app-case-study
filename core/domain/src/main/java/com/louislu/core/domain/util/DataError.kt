@@ -5,6 +5,7 @@ sealed interface DataError: Error {
         REQUEST_TIMEOUT,
         UNAUTHORIZED,
         CONFLICT,
+        NOT_FOUND,
         TOO_MANY_REQUESTS,
         NO_INTERNET,
         PAYLOAD_TOO_LARGE,

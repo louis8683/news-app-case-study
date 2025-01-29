@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     id("kotlin-kapt")
+//    id("com.google.devtools.ksp") // Replace kapt with KSP
     id("com.google.dagger.hilt.android")
 }
 
@@ -74,16 +76,18 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+//    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
-
-    implementation(libs.hilt.android.v255)
-    kapt(libs.hilt.compiler.v255)
 
     implementation(libs.timber)
 
 
     implementation(projects.core.presentation)
+    implementation(projects.core.domain)
+    implementation(projects.core.data)
     implementation(projects.news.presentation)
+    implementation(projects.news.domain)
+    implementation(projects.news.data)
 }
 
 // Allow references to generated code
