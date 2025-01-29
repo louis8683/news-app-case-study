@@ -6,6 +6,7 @@ import com.louislu.core.domain.util.Result
 import com.louislu.core.domain.util.asEmptyDataResult
 import com.louislu.news.data.network.RetrofitRemoteNewsDataSource
 import com.louislu.news.data.room.RoomLocalNewsDataSource
+import com.louislu.news.domain.NewsCategory
 import com.louislu.news.domain.datasource.NewsId
 import com.louislu.news.domain.model.News
 import com.louislu.news.domain.NewsRepository
@@ -26,9 +27,9 @@ class OfflineFirstNewsRepository(
         return localNewsDatasource.getNews()
     }
 
-    override suspend fun fetchNews(): EmptyResult<DataError> {
+    override suspend fun fetchNews(query: String): EmptyResult<DataError> {
         Timber.i("fetching news...")
-        return when(val result = remoteNewsDataSource.getNewsList()) {
+        return when(val result = remoteNewsDataSource.getNews(query = query)) {
             is Result.Error -> {
                 Timber.i("fetch error")
                 result.asEmptyDataResult()
@@ -41,6 +42,30 @@ class OfflineFirstNewsRepository(
                 // Note: why "async" then "await"? Because this line of code will
                 //       live on even if "fetchNews" suspend function is cancelled
                 applicationScope.async {
+                    localNewsDatasource.deleteAllNews()
+                    localNewsDatasource.upsertNewsList(result.data).asEmptyDataResult()
+                }.await()
+            }
+        }
+    }
+
+    override suspend fun fetchHeadlines(category: NewsCategory?): EmptyResult<DataError> {
+        Timber.i("fetching headlines...")
+        val result =
+            if (category != null)
+                remoteNewsDataSource.getHeadlines(category = category)
+            else
+                remoteNewsDataSource.getHeadlines()
+
+        return when(result) {
+            is Result.Error -> {
+                Timber.i("fetch error")
+                result.asEmptyDataResult()
+            }
+            is Result.Success -> {
+                Timber.i("fetch success")
+                applicationScope.async {
+                    localNewsDatasource.deleteAllNews()
                     localNewsDatasource.upsertNewsList(result.data).asEmptyDataResult()
                 }.await()
             }
@@ -59,11 +84,7 @@ class OfflineFirstNewsRepository(
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteAllRuns() {
+    override suspend fun deleteAllNews() {
         localNewsDatasource.deleteAllNews()
-    }
-
-    override fun testPing() {
-        Timber.i("pinged")
     }
 }

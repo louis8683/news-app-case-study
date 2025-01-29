@@ -22,7 +22,9 @@ object CoreLocalDataModule {
             context,
             NewsDatabase::class.java,
             "news.db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

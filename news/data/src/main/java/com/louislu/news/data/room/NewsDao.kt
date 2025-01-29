@@ -15,7 +15,7 @@ interface NewsDao {
     @Upsert
     suspend fun upsertNewsList(newsList: List<NewsEntity>)
 
-    @Query("SELECT * FROM newsentity ORDER BY publishedAt DESC")
+    @Query("SELECT * FROM newsentity ORDER BY fetchOrder ASC")
     fun getNews(): Flow<List<NewsEntity>>
 
     @Query("DELETE FROM newsentity WHERE id=:id")

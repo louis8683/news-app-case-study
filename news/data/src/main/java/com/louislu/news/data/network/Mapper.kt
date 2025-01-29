@@ -5,8 +5,9 @@ import com.louislu.news.domain.model.News
 import java.time.Instant
 import java.time.ZoneId
 
-fun NewsDto.toNews(): News {
+fun NewsDto.toNews(order: Int): News {
     return News(
+        order = order,
         sourceId = source.id ?: "",
         sourceName = source.name,
         author = author ?: "",

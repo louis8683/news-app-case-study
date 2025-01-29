@@ -4,6 +4,7 @@ import java.time.Instant
 import java.time.ZonedDateTime
 
 data class News(
+    val order: Int,
     val sourceId: String,
     val sourceName: String,
     val author: String,

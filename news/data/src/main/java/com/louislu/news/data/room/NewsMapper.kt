@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter
 
 fun NewsEntity.toNews(): News {
     return News(
+        order = fetchOrder,
         sourceId = sourceId,
         sourceName = sourceName,
         author = author,
@@ -24,6 +25,7 @@ fun NewsEntity.toNews(): News {
 
 fun News.toNewsEntity(): NewsEntity {
     return NewsEntity(
+        fetchOrder = order,
         sourceId = sourceId,
         sourceName = sourceName,
         author = author,

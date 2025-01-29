@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.louislu.news.domain.NewsCategory
 import com.louislu.news.domain.NewsRepository
 import com.louislu.news.domain.model.News
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,28 +28,11 @@ class MainViewModel @Inject constructor(
         private set
 
     init {
-        // TODO: remove this
-//        val news = News(
-//            sourceId = "bloomberg",
-//            sourceName = "Bloomberg",
-//            author = "Stephanie Lai, Josh Wingrove",
-//            title = "Trump Says Microsoft Eyeing TikTok Bid With App’s Future in US Unclear - Bloomberg",
-//            description = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.’s TikTok, President Donald Trump said Monday night, without elaborating.",
-//            url = "https://www.bloomberg.com/news/articles/2025-01-28/trump-says-microsoft-eyeing-tiktok-bid-with-app-s-future-unclear",
-//            urlToImage = "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iAUVtbQTpnv8/v1/1200x800.jpg",
-//            publishedAt = Instant.parse("2025-01-28T02:44:00Z").atZone(ZoneId.systemDefault()),
-//            content = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.s TikTok, President Donald Trump said Monday night, without elaborating.\\r\\nI would say yes, Trump told reporters aboard Air Force One… [+124 chars]"
-//        )
-//
-//        mainState = mainState.copy(
-//            newsList = listOf(news, news, news, news, news, news, news, news, news)
-//        )
-
-
-        // TODO: refine the logic
-        Timber.i("Init")
-
-        newsRepository.testPing()
+        // Setup the filter
+        mainState = mainState.copy(
+            filters = NewsCategory.entries.toList(),
+            selectedFilter = null
+        )
 
         viewModelScope.launch {
             newsRepository.getNews()
@@ -57,25 +41,36 @@ class MainViewModel @Inject constructor(
                     Timber.i("Error in getNews()")
                 }
                 .collect { newsList ->
-                    Timber.i("Recieved news, size: ${newsList.size}")
+                    Timber.i("Received news, size: ${newsList.size}")
+
+                    newsList.take(10).forEachIndexed { index, news ->
+                        Timber.i("News #$index -> ${news.title}")
+                    }
+
                     mainState = mainState.copy(newsList = newsList)
                 }
         }
 
-        viewModelScope.launch {
-            Timber.i("fetching...")
-            newsRepository.fetchNews()
-            Timber.i("finished fetching")
-        }
+        fetchHeadlines()
     }
 
     fun onAction(action: MainAction) {
         when(action) {
             is MainAction.OnFilterUpdate -> {
-                Timber.i("Filter updated to ${action.filter}")
-                mainState = mainState.copy(filter = action.filter)
+                Timber.i("Filter updated to ${action.selected}")
+
+                mainState = mainState.copy(selectedFilter = action.selected)
+                fetchHeadlines(action.selected)
             }
             MainAction.OnNewsCardClick -> TODO()
+        }
+    }
+
+    private fun fetchHeadlines(category: NewsCategory? = null) {
+        viewModelScope.launch {
+            Timber.i("fetching...")
+            newsRepository.fetchHeadlines(category)
+            Timber.i("finished fetching")
         }
     }
 }

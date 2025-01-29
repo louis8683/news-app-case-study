@@ -6,7 +6,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [NewsEntity::class],
-    version = 1
+    version = 2
 )
 abstract class NewsDatabase: RoomDatabase() {
 

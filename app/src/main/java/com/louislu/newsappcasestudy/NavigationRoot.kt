@@ -28,7 +28,6 @@ private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
         composable(route = "news") {
             MainScreenRoot(
                 onNewsCardClick = { /* TODO */ },
-                filters = listOf("All", "Headlines", "Politics", "Tech", "Climate", "Sports", "Lifestyle", "World", "Business")
             )
         }
     }
