@@ -14,36 +14,54 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -88,6 +106,16 @@ fun MainScreenRoot(
                 is MainAction.OnFilterUpdate -> {
                     viewModel.onAction(action)
                 }
+
+                is MainAction.OnSearch -> {
+                    viewModel.onAction(action)
+                }
+                MainAction.OnSearchIconClick -> {
+                    viewModel.onAction(action)
+                }
+                MainAction.OnHomeIconClick -> {
+                    viewModel.onAction(action)
+                }
             }
         },
     )
@@ -98,10 +126,27 @@ fun MainScreen(
     state: MainState,
     filterState: StateFlow<NewsCategory?>,
     pagedFlow: Flow<PagingData<News>>,
-    onAction: (MainAction) -> Unit,
+    onAction: (MainAction) -> Unit
 ) {
     Scaffold(
-        bottomBar = { BottomNavBar() }
+        bottomBar = { BottomNavBar(
+            onNav = { index ->
+                when(index) {
+                    0 -> {
+                        onAction(MainAction.OnHomeIconClick)
+                    }
+                    1 -> {
+                        onAction(MainAction.OnSearchIconClick)
+                    }
+                    2 -> {
+
+                    }
+                    else -> throw IllegalStateException(
+                        "Unknown index: $index"
+                    )
+                }
+            }
+        ) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -109,13 +154,22 @@ fun MainScreen(
                 .padding(paddingValues)
         ) {
             AppBar()
-            CategoryChipGroup(
-                state = state,
-                selectedFilterState = filterState,
-                onFilterUpdate = { selection ->
-                    onAction(MainAction.OnFilterUpdate(selection))
-                }
-            )
+
+            if (!state.displaySearch) {
+                CategoryChipGroup(
+                    state = state,
+                    selectedFilterState = filterState,
+                    onFilterUpdate = { selection ->
+                        onAction(MainAction.OnFilterUpdate(selection))
+                    }
+                )
+            } else {
+                CustomSearchBar(
+                    onSearch = { search ->
+                        onAction(MainAction.OnSearch(search))
+                    }
+                )
+            }
             ScrollableCards(
                 pagedFlow = pagedFlow,
                 onCardClick = { news ->
@@ -134,7 +188,7 @@ fun AppBar() {
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(MaterialTheme.colorScheme.onPrimary),
+            .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -159,9 +213,11 @@ fun CategoryChipGroup(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(60.dp)
             .horizontalScroll(rememberScrollState())
             .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         categories.forEach { category ->
             FilterChip(
@@ -172,6 +228,76 @@ fun CategoryChipGroup(
                 label = { Text(text = category?.displayName() ?: "All") },
                 modifier = Modifier.padding(horizontal = 4.dp)
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomSearchBar(
+    onSearch: (String) -> Unit,
+) {
+    val query = remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Auto-focus when drawn
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(16.dp, 8.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+        ) {
+            Spacer(modifier = Modifier.width(16.dp))
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search",
+                tint = Color.DarkGray,
+                modifier = Modifier.size(24.dp)
+            )
+
+            BasicTextField(
+                value = query.value,
+                onValueChange = { query.value = it },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    imeAction = ImeAction.Search
+                ),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearch(query.value)
+                        keyboardController?.hide()
+                    }
+                ),
+                textStyle = TextStyle(color = Color.Black, fontSize = 18.sp),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+                    .focusRequester(focusRequester),
+            )
+
+            if (query.value.isNotEmpty()) {
+                IconButton(onClick = { query.value = "" }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Clear text",
+                        tint = Color.DarkGray
+                    )
+                }
+            }
         }
     }
 }
@@ -249,7 +375,9 @@ fun ScrollableCards(
 }
 
 @Composable
-fun BottomNavBar() {
+fun BottomNavBar(
+    onNav: (Int) -> Unit
+) {
     var selectedIndex by remember { mutableIntStateOf(0) }
     val items = listOf("News" to Icons.Default.Home, "Search" to Icons.Default.Search, "Favorites" to Icons.Default.Favorite)
 
@@ -257,7 +385,10 @@ fun BottomNavBar() {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedIndex == index,
-                onClick = { selectedIndex = index },
+                onClick = {
+                    selectedIndex = index
+                    onNav(index)
+                },
                 icon = { Icon(imageVector = item.second, contentDescription = item.first) },
                 label = { Text(text = item.first) })
         }
@@ -395,6 +526,7 @@ private fun MainScreenPreview() {
     NewsAppCaseStudyTheme {
         MainScreen (
             state = MainState(
+                displaySearch = true,
                 filters = NewsCategory.entries.toList()
             ),
             filterState = MutableStateFlow<NewsCategory?>(null),

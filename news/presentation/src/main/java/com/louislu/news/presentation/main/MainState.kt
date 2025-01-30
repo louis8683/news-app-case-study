@@ -13,5 +13,7 @@ data class MainState(
     val isLoading: Boolean = false,
     val currentPage: Int = 0,
     val hasMorePages: Boolean = true,
-    val pagedFlow: Flow<PagingData<News>> = emptyFlow()
+    val pagedFlow: Flow<PagingData<News>> = emptyFlow(),
+    val displaySearch: Boolean = false,
+    val isSearchActive: Boolean = false,
 )

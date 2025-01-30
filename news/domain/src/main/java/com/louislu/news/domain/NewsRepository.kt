@@ -14,7 +14,7 @@ interface NewsRepository {
 //    suspend fun fetchNews(query: String): EmptyResult<DataError>
 //    suspend fun fetchHeadlines(category: NewsCategory? = null): EmptyResult<DataError>
 
-    suspend fun getHeadlinesPaged(category: NewsCategory? = null): Flow<PagingData<News>>
+    suspend fun getNewsPaged(category: NewsCategory? = null, query: String? = null): Flow<PagingData<News>>
 
 //    suspend fun upsertNews(news: News): EmptyResult<DataError>
 //    suspend fun upsertNewsList(newsList: List<News>): EmptyResult<DataError>
