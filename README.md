@@ -56,7 +56,7 @@ A modern news application that provides real-time headlines and articles using N
 📂 news\
 ┣ 📂 data        # Data sources (API, Database)\
 ┣ 📂 domain      # Business logic and use cases\
-┣ 📂 presentation # UI (Compose screens, ViewModels)\
+┣ 📂 presentation # UI (Compose screens, ViewModels)
 
 ## 🚀 Getting Started
 
