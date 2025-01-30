@@ -1,5 +1,6 @@
 package com.louislu.news.data.room
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
@@ -23,4 +24,7 @@ interface NewsDao {
 
     @Query("DELETE FROM newsentity")
     suspend fun deleteAllNews()
+
+    @Query("SELECT * FROM newsentity ORDER BY fetchOrder ASC")
+    fun pagingSource(): PagingSource<Int, NewsEntity>
 }

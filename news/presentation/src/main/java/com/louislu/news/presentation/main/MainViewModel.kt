@@ -5,12 +5,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.louislu.news.domain.NewsCategory
 import com.louislu.news.domain.NewsRepository
 import com.louislu.news.domain.model.News
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -27,50 +34,40 @@ class MainViewModel @Inject constructor(
     var mainState by mutableStateOf(MainState())
         private set
 
+    private val _selectedFilter = MutableStateFlow<NewsCategory?>(null)
+
+    val selectedFilter: StateFlow<NewsCategory?> = _selectedFilter
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pagedFlow: Flow<PagingData<News>> = _selectedFilter
+        .flatMapLatest { category ->
+            Timber.i("Re-fetching headlines")
+            newsRepository.getHeadlinesPaged(category)
+        }
+        .cachedIn(viewModelScope)
+
     init {
-        // Setup the filter
         mainState = mainState.copy(
             filters = NewsCategory.entries.toList(),
-            selectedFilter = null
         )
 
         viewModelScope.launch {
-            newsRepository.getNews()
-                .catch { e ->
-                    // TODO: Handle the error
-                    Timber.i("Error in getNews()")
-                }
-                .collect { newsList ->
-                    Timber.i("Received news, size: ${newsList.size}")
-
-                    newsList.take(10).forEachIndexed { index, news ->
-                        Timber.i("News #$index -> ${news.title}")
-                    }
-
-                    mainState = mainState.copy(newsList = newsList)
-                }
+            mainState = mainState.copy(
+                pagedFlow = newsRepository.getHeadlinesPaged().cachedIn(viewModelScope)
+            )
         }
-
-        fetchHeadlines()
     }
 
     fun onAction(action: MainAction) {
+        Timber.i("onAction")
         when(action) {
             is MainAction.OnFilterUpdate -> {
                 Timber.i("Filter updated to ${action.selected}")
-
-                mainState = mainState.copy(selectedFilter = action.selected)
-                fetchHeadlines(action.selected)
+                _selectedFilter.value = action.selected
             }
-            MainAction.OnNewsCardClick -> TODO()
-        }
-    }
-
-    private fun fetchHeadlines(category: NewsCategory? = null) {
-        viewModelScope.launch {
-            Timber.i("fetching...")
-            newsRepository.fetchHeadlines(category)
-            Timber.i("finished fetching")
+            is MainAction.OnNewsCardClick -> {
+                Timber.i("News card clicked -> ${action.news.title}")
+            }
         }
     }
 }

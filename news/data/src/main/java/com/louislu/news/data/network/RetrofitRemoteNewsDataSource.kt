@@ -68,7 +68,7 @@ class RetrofitRemoteNewsDataSource @Inject constructor(
             val response = when {
                 pageSize != null && page != null -> {
                     newsApiService.getTopHeadlines(
-                        pageSize = page,
+                        pageSize = pageSize,
                         page = page
                     )
                 }
@@ -98,7 +98,7 @@ class RetrofitRemoteNewsDataSource @Inject constructor(
                     newsApiService.getTopHeadlines(
                         category = category.apiValue,
                         sources = null,
-                        pageSize = page,
+                        pageSize = pageSize,
                         page = page
                     )
                 }
@@ -128,7 +128,7 @@ class RetrofitRemoteNewsDataSource @Inject constructor(
                 pageSize != null && page != null -> {
                     newsApiService.getTopHeadlines(
                         sources = NewsSource.toCommaSeparatedString(sources),
-                        pageSize = page,
+                        pageSize = pageSize,
                         page = page
                     )
                 }

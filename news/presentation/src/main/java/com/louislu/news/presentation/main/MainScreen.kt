@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,6 +33,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.PagingData
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.louislu.core.presentation.designsystem.theme.NewsAppCaseStudyTheme
@@ -56,8 +58,16 @@ import com.louislu.news.domain.NewsCategory
 import com.louislu.news.domain.model.News
 import com.louislu.news.presentation.R
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.Instant
 import java.time.ZoneId
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import java.util.Locale.Category
 
 
 @Composable
@@ -67,20 +77,27 @@ fun MainScreenRoot(
 ) {
     MainScreen(
         state = viewModel.mainState,
+        filterState = viewModel.selectedFilter,
+        pagedFlow = viewModel.pagedFlow,
         onAction = { action ->
             when(action) {
-                MainAction.OnNewsCardClick -> onNewsCardClick()
+                is MainAction.OnNewsCardClick -> {
+                    viewModel.onAction(action)
+                    onNewsCardClick()
+                }
                 is MainAction.OnFilterUpdate -> {
                     viewModel.onAction(action)
                 }
             }
-        }
+        },
     )
 }
 
 @Composable
 fun MainScreen(
     state: MainState,
+    filterState: StateFlow<NewsCategory?>,
+    pagedFlow: Flow<PagingData<News>>,
     onAction: (MainAction) -> Unit,
 ) {
     Scaffold(
@@ -94,11 +111,17 @@ fun MainScreen(
             AppBar()
             CategoryChipGroup(
                 state = state,
+                selectedFilterState = filterState,
                 onFilterUpdate = { selection ->
                     onAction(MainAction.OnFilterUpdate(selection))
                 }
             )
-            ScrollableCards(state = state)
+            ScrollableCards(
+                pagedFlow = pagedFlow,
+                onCardClick = { news ->
+                    onAction(MainAction.OnNewsCardClick(news))
+                }
+            )
         }
 
     }
@@ -127,9 +150,11 @@ fun AppBar() {
 @Composable
 fun CategoryChipGroup(
     state: MainState,
+    selectedFilterState: StateFlow<NewsCategory?>,
     onFilterUpdate: (NewsCategory?) -> Unit
 ) {
     val categories = listOf(null) + state.filters
+    val selectedFilter by selectedFilterState.collectAsState()
 
     Row(
         modifier = Modifier
@@ -140,7 +165,7 @@ fun CategoryChipGroup(
     ) {
         categories.forEach { category ->
             FilterChip(
-                selected = state.selectedFilter == category,
+                selected = selectedFilter == category,
                 onClick = {
                     onFilterUpdate(category)
                 },
@@ -153,12 +178,23 @@ fun CategoryChipGroup(
 
 @Composable
 fun ScrollableCards(
-    state: MainState
+    pagedFlow: Flow<PagingData<News>>,
+    onCardClick: (News) -> Unit
 ) {
 
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
+    val newsItems = pagedFlow.collectAsLazyPagingItems()
+
+    LaunchedEffect(newsItems.itemSnapshotList.items) {
+        Timber.i("paged flow updated")
+        coroutineScope.launch {
+            lazyListState.animateScrollToItem(
+                index = 0
+            )
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -167,18 +203,25 @@ fun ScrollableCards(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = lazyListState
     ) {
-        itemsIndexed(state.newsList) { index, news ->
-            if (index == 0) {
-                CustomCardLarge(
-                    news = news,
-                    onClick = {}
-                )
-            }
-            else {
-                CustomCardSmall(
-                    news = news,
-                    onClick = {}
-                )
+        items(
+            count = newsItems.itemCount,
+            key = { index -> "${newsItems[index]?.title ?: "Unknown"}-$index" },
+        ) { index: Int ->
+
+            val news = newsItems[index]
+            news?.let {
+                if (index == 0) {
+                    CustomCardLarge(
+                        news = news,
+                        onClick = { onCardClick(news) }
+                    )
+                }
+                else {
+                    CustomCardSmall(
+                        news = news,
+                        onClick = { onCardClick(news) }
+                    )
+                }
             }
         }
 
@@ -203,29 +246,6 @@ fun ScrollableCards(
             }
         }
     }
-
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .verticalScroll(rememberScrollState())
-//            .padding(8.dp),
-//        verticalArrangement = Arrangement.spacedBy(8.dp)
-//    ) {
-//        state.newsList.forEachIndexed { index, news ->
-//            if (index == 0) {
-//                CustomCardLarge(
-//                    news = news,
-//                    onClick = {}
-//                )
-//            }
-//            else {
-//                CustomCardSmall(
-//                    news = news,
-//                    onClick = {}
-//                )
-//            }
-//        }
-//    }
 }
 
 @Composable
@@ -375,9 +395,10 @@ private fun MainScreenPreview() {
     NewsAppCaseStudyTheme {
         MainScreen (
             state = MainState(
-                listOf(news, news.copy(order = 2), news.copy(order = 3)),
                 filters = NewsCategory.entries.toList()
             ),
+            filterState = MutableStateFlow<NewsCategory?>(null),
+            pagedFlow = emptyFlow(),
             onAction = {},
         )
     }

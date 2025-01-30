@@ -1,7 +1,16 @@
 package com.louislu.news.data.di
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.RemoteMediator
 import com.louislu.news.data.OfflineFirstNewsRepository
+import com.louislu.news.data.network.NewsApiService
 import com.louislu.news.data.network.RetrofitRemoteNewsDataSource
+import com.louislu.news.data.paging.NewsRemoteMediator
+import com.louislu.news.data.room.NewsDao
+import com.louislu.news.data.room.NewsDatabase
+import com.louislu.news.data.room.NewsEntity
 import com.louislu.news.data.room.RoomLocalNewsDataSource
 import com.louislu.news.domain.NewsRepository
 import dagger.Module
@@ -22,12 +31,12 @@ object CoreDataModule {
     fun provideOfflineFirstNewsRepository(
         localNewsDataSource: RoomLocalNewsDataSource,
         remoteNewsDataSource: RetrofitRemoteNewsDataSource,
-        applicationScope: CoroutineScope
+        newsDatabase: NewsDatabase,
     ): NewsRepository {
         return OfflineFirstNewsRepository(
             localNewsDatasource = localNewsDataSource,
             remoteNewsDataSource = remoteNewsDataSource,
-            applicationScope = applicationScope
+            newsDatabase = newsDatabase,
         )
     }
 }

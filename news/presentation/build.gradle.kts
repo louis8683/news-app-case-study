@@ -69,6 +69,10 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
+    // Paging
+    implementation("androidx.paging:paging-runtime:3.3.5")
+    implementation("androidx.paging:paging-compose:3.3.5")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

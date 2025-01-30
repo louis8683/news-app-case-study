@@ -1,11 +1,21 @@
 package com.louislu.news.data
 
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.louislu.core.domain.util.DataError
 import com.louislu.core.domain.util.EmptyResult
 import com.louislu.core.domain.util.Result
 import com.louislu.core.domain.util.asEmptyDataResult
+import com.louislu.news.data.network.NewsApiService
 import com.louislu.news.data.network.RetrofitRemoteNewsDataSource
+import com.louislu.news.data.paging.NewsRemoteMediator
+import com.louislu.news.data.room.NewsDatabase
+import com.louislu.news.data.room.NewsEntity
 import com.louislu.news.data.room.RoomLocalNewsDataSource
+import com.louislu.news.data.room.toNews
 import com.louislu.news.domain.NewsCategory
 import com.louislu.news.domain.datasource.NewsId
 import com.louislu.news.domain.model.News
@@ -13,75 +23,31 @@ import com.louislu.news.domain.NewsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
 
 class OfflineFirstNewsRepository(
     private val localNewsDatasource: RoomLocalNewsDataSource,
     private val remoteNewsDataSource: RetrofitRemoteNewsDataSource,
-    private val applicationScope: CoroutineScope
+    private val newsDatabase: NewsDatabase,
 ): NewsRepository {
 
-    override fun getNews(): Flow<List<News>> {
-        // Single source of truth (local database)
-        return localNewsDatasource.getNews()
-    }
+    @OptIn(ExperimentalPagingApi::class)
+    override suspend fun getHeadlinesPaged(category: NewsCategory?): Flow<PagingData<News>> {
 
-    override suspend fun fetchNews(query: String): EmptyResult<DataError> {
-        Timber.i("fetching news...")
-        return when(val result = remoteNewsDataSource.getNews(query = query)) {
-            is Result.Error -> {
-                Timber.i("fetch error")
-                result.asEmptyDataResult()
-            }
-            is Result.Success -> {
-                Timber.i("fetch success")
-                // Issue: coroutine cancellation, ex., viewModelScope cancellation
-                // Solution #1 (discouraged): withContext(NonCancellable)
-                // Solution #2: use the application scope
-                // Note: why "async" then "await"? Because this line of code will
-                //       live on even if "fetchNews" suspend function is cancelled
-                applicationScope.async {
-                    localNewsDatasource.deleteAllNews()
-                    localNewsDatasource.upsertNewsList(result.data).asEmptyDataResult()
-                }.await()
-            }
+        Timber.i("getHeadlinesPaged")
+
+        // Test code for pager
+        val pager = Pager(
+            config = PagingConfig(pageSize = 10),
+            remoteMediator = NewsRemoteMediator(newsDatabase, remoteNewsDataSource, NewsRemoteMediator.Companion.Endpoint.TOP_HEADLINES, category = category)) {
+            newsDatabase.newsDao.pagingSource()
         }
-    }
 
-    override suspend fun fetchHeadlines(category: NewsCategory?): EmptyResult<DataError> {
-        Timber.i("fetching headlines...")
-        val result =
-            if (category != null)
-                remoteNewsDataSource.getHeadlines(category = category)
-            else
-                remoteNewsDataSource.getHeadlines()
-
-        return when(result) {
-            is Result.Error -> {
-                Timber.i("fetch error")
-                result.asEmptyDataResult()
-            }
-            is Result.Success -> {
-                Timber.i("fetch success")
-                applicationScope.async {
-                    localNewsDatasource.deleteAllNews()
-                    localNewsDatasource.upsertNewsList(result.data).asEmptyDataResult()
-                }.await()
-            }
+        return pager.flow.map { pagingData: PagingData<NewsEntity> ->
+            pagingData.map { it.toNews() }
         }
-    }
-
-    override suspend fun upsertNews(news: News): EmptyResult<DataError> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun upsertNewsList(newsList: List<News>): EmptyResult<DataError> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteNews(id: NewsId) {
-        TODO("Not yet implemented")
     }
 
     override suspend fun deleteAllNews() {
