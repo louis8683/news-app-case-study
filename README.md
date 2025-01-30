@@ -6,39 +6,43 @@ A modern news application that provides real-time headlines and articles using N
 
 ### 🏗 Architecture
 
-- Multi-module setup: Enables better scalability and modularization.
+- **Multi-module setup**: Enables better scalability and modularization.
 
-- Clean Architecture: Layered design ensuring maintainability and testability.
+- **Clean Architecture**: Layered design ensuring maintainability and testability.
 
-- MVVM (Model-View-ViewModel): Separates concerns for a structured and predictable codebase.
+- **MVVM (Model-View-ViewModel)**: Separates concerns for a structured and predictable codebase.
 
 ### 📶 Offline-First Approach
 
-- Retrofit: Fetches news articles efficiently.
+- **Retrofit**: Fetches news articles efficiently.
 
-- Room Database: Caches news for offline reading.
+- **Room Database**: Caches news for offline reading.
 
-- Single Source of Truth: Ensures consistency between local and remote data.
+- **Single Source of Truth**: Ensures consistency between local and remote data.
 
 ### 📚 Modern Libraries & Tech Stack
 
-- Jetpack Compose: Declarative UI with less boilerplate.
+- **Hilt**: Dependency Injection for better scalability and testability.
 
-- Paging 3: Efficient pagination of news articles.
+- **Jetpack Compose**: Declarative UI with less boilerplate.
 
-- Coil: Fast and smooth image loading.
+- **Firebase Analytics**: Track user engagement and app performance.
 
-- Lazy Loading (LazyColumn): Renders large lists seamlessly.
+- **Paging 3**: Efficient pagination of news articles.
 
-- Coroutines & Flow: Ensures smooth, non-blocking operations.
+- **Coil**: Fast and smooth image loading.
+
+- **Lazy Loading (LazyColumn)**: Renders large lists seamlessly.
+
+- **Coroutines & Flow**: Ensures smooth, non-blocking operations.
 
 ### 🎨 Beautiful & Intuitive UI
 
-- Dark Mode: Supports system-wide dark mode.
+- **Dark Mode**: Supports system-wide dark mode.
 
-- Designed in Figma: Well-crafted UI for an immersive reading experience.
+- **Designed in Figma**: Well-crafted UI for an immersive reading experience.
 
-- Splash Screen: Smooth startup transition.
+- **Splash Screen**: Smooth startup transition.
 
 ## 📸 Screenshots (Coming Soon)
 
