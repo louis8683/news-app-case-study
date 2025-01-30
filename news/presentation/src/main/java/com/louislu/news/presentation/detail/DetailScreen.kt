@@ -42,7 +42,12 @@ import coil3.compose.rememberAsyncImagePainter
 import com.louislu.core.presentation.font.Fonts
 import com.louislu.news.domain.model.News
 import com.louislu.news.presentation.R
+import com.louislu.news.presentation.detail.components.AppBarWithImage
+import com.louislu.news.presentation.detail.components.CustomBottomBar
+import com.louislu.news.presentation.detail.components.MainContent
+import com.louislu.news.presentation.imageMap
 import com.louislu.news.presentation.main.MainViewModel
+import com.louislu.news.presentation.main.components.AppBarWithTitle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -101,7 +106,14 @@ fun DetailScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            AppBar()
+
+
+            state.value?.let { news ->
+                val localImageRes = imageMap.getOrDefault(news.sourceId, null)
+                localImageRes?.let {
+                    AppBarWithImage(localImageRes)
+                }
+            } ?: AppBarWithTitle()
             state.value?.let {
                 MainContent(
                     news = it,
@@ -113,133 +125,6 @@ fun DetailScreen(
     }
 }
 
-@Composable
-fun AppBar() {
-    // TODO: map the news source to the local image of the publisher
-    val localImageRes =  R.drawable.wsj_logo
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(MaterialTheme.colorScheme.background),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = localImageRes),
-            contentDescription = "Local Image",
-            modifier = Modifier
-                .width(168.dp)
-                .height(28.dp)
-        )
-    }
-}
-
-@Composable
-fun MainContent(
-    news: News,
-    onLinkButtonClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(32.dp, 16.dp)
-        ) {
-            Text(
-                text = news.publishedAt.format(DateTimeFormatter
-                    .ofPattern("MMMM d, yyyy h:mm a 'UTC'", Locale.ENGLISH)),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = news.title,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = "Author: ${news.author}",
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
-        // Online image
-        AsyncImage(
-            model = news.urlToImage,
-            contentDescription = "Online Image",
-            modifier = Modifier
-                .fillMaxWidth(),
-            contentScale = ContentScale.FillWidth
-        )
-        Column(
-            modifier = Modifier
-                .padding(32.dp, 16.dp)
-                .weight(1f)
-        ) {
-            Text(
-                text = news.description,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.secondary
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(
-                text = news.content,
-                style = MaterialTheme.typography.bodyMedium
-            )
-        }
-        Box(
-            modifier = Modifier
-                .padding(48.dp, 32.dp)
-        ) {
-            Button(
-                onClick = onLinkButtonClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(text = "Full Article")
-            }
-        }
-    }
-}
-
-@Composable
-fun CustomBottomBar(
-    onReturnButtonClick: () -> Unit,
-    onSaveButtonClick: () -> Unit,
-    saved: StateFlow<Boolean>
-) {
-
-    val state = saved.collectAsState()
-
-    BottomAppBar(
-        actions = {
-            IconButton(onClick = onReturnButtonClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            IconButton(onClick = onSaveButtonClick) {
-                Icon(
-                    imageVector = if(state.value) {
-                        Icons.Default.Favorite
-                    } else {
-                        Icons.Default.FavoriteBorder
-                    },
-                    contentDescription = "Save",
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        },
-//        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-//        contentColor = MaterialTheme.colorScheme.onSurface
-    )
-}
 
 @Preview
 @Composable
