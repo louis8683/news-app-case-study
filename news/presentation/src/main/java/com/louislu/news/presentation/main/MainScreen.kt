@@ -1,5 +1,11 @@
 package com.louislu.news.presentation.main
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkRequest
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -17,6 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +49,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -51,6 +64,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.AbsoluteAlignment
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +72,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -67,6 +82,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
@@ -81,6 +97,10 @@ import java.time.Instant
 import java.time.ZoneId
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.louislu.news.presentation.BuildConfig
+import com.louislu.news.presentation.imageMap
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -97,6 +117,7 @@ fun MainScreenRoot(
         state = viewModel.mainState,
         filterState = viewModel.selectedFilter,
         pagedFlow = viewModel.pagedFlow,
+        favoritesFlow = viewModel.favorites,
         onAction = { action ->
             when(action) {
                 is MainAction.OnNewsCardClick -> {
@@ -116,6 +137,14 @@ fun MainScreenRoot(
                 MainAction.OnHomeIconClick -> {
                     viewModel.onAction(action)
                 }
+
+                MainAction.OnFavoritesIconClick -> {
+                    viewModel.onAction(action)
+                }
+
+                MainAction.OnRefresh -> {
+                    viewModel.onAction(action)
+                }
             }
         },
     )
@@ -126,27 +155,39 @@ fun MainScreen(
     state: MainState,
     filterState: StateFlow<NewsCategory?>,
     pagedFlow: Flow<PagingData<News>>,
+    favoritesFlow: Flow<List<News>>,
     onAction: (MainAction) -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = { BottomNavBar(
             onNav = { index ->
                 when(index) {
                     0 -> {
                         onAction(MainAction.OnHomeIconClick)
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                message = "Hello, Snackbar!",
+                                actionLabel = "Dismiss",
+                                duration = SnackbarDuration.Short
+                            )
+                        }
                     }
                     1 -> {
                         onAction(MainAction.OnSearchIconClick)
                     }
                     2 -> {
-
+                        onAction(MainAction.OnFavoritesIconClick)
                     }
                     else -> throw IllegalStateException(
                         "Unknown index: $index"
                     )
                 }
             }
-        ) }
+        )}
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -155,27 +196,40 @@ fun MainScreen(
         ) {
             AppBar()
 
-            if (!state.displaySearch) {
-                CategoryChipGroup(
+            if (!state.displayFavorites) {
+
+                if (!state.displaySearch) {
+                    CategoryChipGroup(
+                        state = state,
+                        selectedFilterState = filterState,
+                        onFilterUpdate = { selection ->
+                            onAction(MainAction.OnFilterUpdate(selection))
+                        }
+                    )
+                } else {
+                    CustomSearchBar(
+                        onSearch = { search ->
+                            onAction(MainAction.OnSearch(search))
+                        }
+                    )
+                }
+                ScrollableCards(
                     state = state,
-                    selectedFilterState = filterState,
-                    onFilterUpdate = { selection ->
-                        onAction(MainAction.OnFilterUpdate(selection))
-                    }
-                )
-            } else {
-                CustomSearchBar(
-                    onSearch = { search ->
-                        onAction(MainAction.OnSearch(search))
-                    }
+                    pagedFlow = pagedFlow,
+                    onCardClick = { news ->
+                        onAction(MainAction.OnNewsCardClick(news))
+                    },
+                    onRefresh = { onAction(MainAction.OnRefresh) },
+                    snackbarHostState = snackbarHostState,
+                    coroutineScope = scope
                 )
             }
-            ScrollableCards(
-                pagedFlow = pagedFlow,
-                onCardClick = { news ->
-                    onAction(MainAction.OnNewsCardClick(news))
-                }
-            )
+            else {
+                FavoriteScrollableCards(
+                    favorites = favoritesFlow,
+                    onCardClick = {}
+                )
+            }
         }
 
     }
@@ -282,7 +336,10 @@ fun CustomSearchBar(
                         keyboardController?.hide()
                     }
                 ),
-                textStyle = TextStyle(color = Color.Black, fontSize = 18.sp),
+                textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 18.sp
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 8.dp)
@@ -302,16 +359,21 @@ fun CustomSearchBar(
     }
 }
 
+@SuppressLint("RememberReturnType")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScrollableCards(
+    state: MainState,
     pagedFlow: Flow<PagingData<News>>,
-    onCardClick: (News) -> Unit
+    onCardClick: (News) -> Unit,
+    onRefresh: () -> Unit,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope
 ) {
 
     val lazyListState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
-
     val newsItems = pagedFlow.collectAsLazyPagingItems()
+    val isConnected = rememberConnectivityStatus()
 
     LaunchedEffect(newsItems.itemSnapshotList.items) {
         Timber.i("paged flow updated")
@@ -322,52 +384,102 @@ fun ScrollableCards(
         }
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        state = lazyListState
-    ) {
-        items(
-            count = newsItems.itemCount,
-            key = { index -> "${newsItems[index]?.title ?: "Unknown"}-$index" },
-        ) { index: Int ->
-
-            val news = newsItems[index]
-            news?.let {
-                if (index == 0) {
-                    CustomCardLarge(
-                        news = news,
-                        onClick = { onCardClick(news) }
-                    )
-                }
-                else {
-                    CustomCardSmall(
-                        news = news,
-                        onClick = { onCardClick(news) }
-                    )
-                }
+    // Check API key on launch
+    LaunchedEffect(Unit) {
+        if (BuildConfig.API_KEY.isNullOrEmpty()) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = "API_KEY is missing!",
+                    actionLabel = "Dismiss",
+                    duration = SnackbarDuration.Indefinite
+                )
             }
         }
+    }
 
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "You're all caught up!")
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = {
-                    coroutineScope.launch {
-                        lazyListState.animateScrollToItem(
-                            index = 0
+    LaunchedEffect(isConnected) {
+        Timber.i("Connection: $isConnected")
+        if (!isConnected) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = "No Internet",
+                    actionLabel = "Dismiss",
+                    duration = SnackbarDuration.Short
+                )
+            }
+        } else {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = "Connected to Internet!",
+                    actionLabel = "Dismiss",
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
+
+    PullToRefreshBox(
+        isRefreshing = newsItems.loadState.refresh is LoadState.Loading,
+        onRefresh = {
+            onRefresh()
+            newsItems.refresh()
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            state = lazyListState
+        ) {
+            items(
+                count = newsItems.itemCount,
+                key = { index -> "${newsItems[index]?.title ?: "Unknown"}-$index" },
+            ) { index: Int ->
+
+                val news = newsItems[index]
+                news?.let {
+                    if (index == 0) {
+                        CustomCardLarge(
+                            news = news,
+                            onClick = { onCardClick(news) }
+                        )
+                    } else {
+                        CustomCardSmall(
+                            news = news,
+                            onClick = {
+                                onCardClick(news)
+                                coroutineScope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Hello, Snackbar!",
+                                        actionLabel = "Dismiss",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
                         )
                     }
-                }) {
-                    Text(text = "Back to Top")
+                }
+            }
+
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = "You're all caught up!")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = {
+                        coroutineScope.launch {
+                            lazyListState.animateScrollToItem(
+                                index = 0
+                            )
+                        }
+                    }) {
+                        Text(text = "Back to Top")
+                    }
                 }
             }
         }
@@ -375,24 +487,42 @@ fun ScrollableCards(
 }
 
 @Composable
+fun rememberConnectivityStatus(): Boolean {
+    val context = LocalContext.current
+    val connectivityManager = remember { context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager }
+    val networkStatus = remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        val callback = object : ConnectivityManager.NetworkCallback() {
+            override fun onLost(network: Network) {
+                networkStatus.value = false
+            }
+
+            override fun onAvailable(network: Network) {
+                networkStatus.value = true
+            }
+        }
+
+        val networkRequest = NetworkRequest.Builder().build()
+        connectivityManager.registerNetworkCallback(networkRequest, callback)
+
+//        onDispose {
+//            connectivityManager.unregisterNetworkCallback(callback)
+//        }
+    }
+
+    return networkStatus.value
+}
+
+@Composable
 fun FavoriteScrollableCards(
-    favorites: List<News>,
+    favorites: Flow<List<News>>,
     onCardClick: (News) -> Unit
 ) {
 
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-
-    val newsItems = pagedFlow.collectAsLazyPagingItems()
-
-    LaunchedEffect(newsItems.itemSnapshotList.items) {
-        Timber.i("paged flow updated")
-        coroutineScope.launch {
-            lazyListState.animateScrollToItem(
-                index = 0
-            )
-        }
-    }
+    val newsList by favorites.collectAsState(initial = emptyList())
 
     LazyColumn(
         modifier = Modifier
@@ -401,26 +531,12 @@ fun FavoriteScrollableCards(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = lazyListState
     ) {
-        items(
-            count = newsItems.itemCount,
-            key = { index -> "${newsItems[index]?.title ?: "Unknown"}-$index" },
-        ) { index: Int ->
+        items(newsList) { news ->
+            CustomCardSmall(
+                news = news,
+                onClick = { onCardClick(news) }
+            )
 
-            val news = newsItems[index]
-            news?.let {
-                if (index == 0) {
-                    CustomCardLarge(
-                        news = news,
-                        onClick = { onCardClick(news) }
-                    )
-                }
-                else {
-                    CustomCardSmall(
-                        news = news,
-                        onClick = { onCardClick(news) }
-                    )
-                }
-            }
         }
 
         item {
@@ -430,7 +546,7 @@ fun FavoriteScrollableCards(
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "You're all caught up!")
+                Text(text = "You're at the bottom!")
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = {
                     coroutineScope.launch {
@@ -472,8 +588,7 @@ fun CustomCardLarge(
     news: News,
     onClick: () -> Unit,
 ) {
-    // TODO: map the news source to the local image of the publisher
-    val localImageRes =  R.drawable.wsj_logo
+    val localImageRes = imageMap.getOrDefault(news.sourceId, null)
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -498,13 +613,19 @@ fun CustomCardLarge(
                 modifier = Modifier
                     .padding(8.dp, 4.dp)
             ) {
-                Image(
-                    painter = rememberAsyncImagePainter(model = localImageRes),
-                    contentDescription = "Local Image",
-                    modifier = Modifier
-                        .width(168.dp)
-                        .height(28.dp)
+                localImageRes?.let {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = localImageRes),
+                        contentDescription = "Local Image",
+                        modifier = Modifier
+                            .height(28.dp)
+                    )
+                } ?: Text(
+                    text = news.sourceName,
+                    style = MaterialTheme.typography.titleLarge
                 )
+
+
             }
 
             // Text
@@ -517,7 +638,7 @@ fun CustomCardLarge(
                     modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Start,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleLarge
                 )
             }
         }
@@ -529,8 +650,7 @@ fun CustomCardSmall(
     news: News,
     onClick: () -> Unit,
 ) {
-    // TODO: map the news source to the local image of the publisher
-    val localImageRes =  R.drawable.wsj_logo
+    val localImageRes = imageMap.getOrDefault(news.sourceId, null)
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -547,15 +667,24 @@ fun CustomCardSmall(
                 modifier = Modifier
                     .weight(1f)
                     .padding(16.dp),
+                horizontalAlignment = Alignment.Start
             ) {
                 // Local Image
-                Image(
-                    painter = rememberAsyncImagePainter(model = localImageRes),
-                    contentDescription = "Local Image",
-                    modifier = Modifier
-                        .width(168.dp)
-                        .height(28.dp)
-                )
+                Box(modifier = Modifier) {
+                    localImageRes?.let {
+                        Image(
+                            painter = rememberAsyncImagePainter(model = localImageRes),
+                            contentDescription = "Local Image",
+                            modifier = Modifier
+                                .height(28.dp)
+                        )
+                    } ?: Text(
+                        text = news.sourceName,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 // Text
                 Text(
@@ -579,7 +708,9 @@ fun CustomCardSmall(
     }
 }
 
-@Preview
+
+@Preview(name = "Light Mode", uiMode = Configuration.UI_MODE_NIGHT_NO)
+@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun MainScreenPreview() {
     val news = News(
@@ -598,12 +729,13 @@ private fun MainScreenPreview() {
     NewsAppCaseStudyTheme {
         MainScreen (
             state = MainState(
-                displaySearch = true,
+                displaySearch = false,
                 filters = NewsCategory.entries.toList()
             ),
             filterState = MutableStateFlow<NewsCategory?>(null),
             pagedFlow = emptyFlow(),
             onAction = {},
+            favoritesFlow = emptyFlow()
         )
     }
 }

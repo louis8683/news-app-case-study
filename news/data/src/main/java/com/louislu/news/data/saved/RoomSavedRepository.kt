@@ -12,7 +12,7 @@ import javax.inject.Inject
 class RoomSavedRepository @Inject constructor(
     private val savedDao: SavedDao
 ): SavedRepository {
-    override suspend fun getSaved(): Flow<List<News>> {
+    override fun getSaved(): Flow<List<News>> {
         Timber.i("getSaved()")
         return savedDao.getSavedNews().map { list -> list.map { it.toNews() } }
     }

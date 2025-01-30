@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SavedRepository {
 
-    suspend fun getSaved(): Flow<List<News>>
+    fun getSaved(): Flow<List<News>>
 
     suspend fun save(news: News)
 

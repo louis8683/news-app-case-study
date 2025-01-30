@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1008582256881",
+    "project_id": "case-study-news-app",
+    "storage_bucket": "case-study-news-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008582256881:android:33bb8888ab6aca2c422150",
+        "android_client_info": {
+          "package_name": "com.louislu.newsappcasestudy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnQnT6WHSEMB8VPm-tan8cR1aeA3nLUbI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

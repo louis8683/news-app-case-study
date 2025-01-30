@@ -6,6 +6,10 @@ plugins {
 //    id("com.google.devtools.ksp") // Replace kapt with KSP
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
+
+    id("com.google.gms.google-services")
+
+//    id('com.google.gms.google-services')
 }
 
 android {
@@ -14,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId = "com.louislu.newsappcasestudy"
-        minSdk = 26
+        minSdk = 31
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -82,6 +86,11 @@ dependencies {
 
     implementation(libs.timber)
 
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
+    implementation("com.google.firebase:firebase-analytics")
+
+    implementation("androidx.core:core-splashscreen:1.0.0")
 
     implementation(projects.core.presentation)
     implementation(projects.core.domain)

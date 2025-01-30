@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.louislu.news.domain.NewsRepository
 import com.louislu.news.domain.SavedRepository
 import com.louislu.news.domain.model.News
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
     private val newsRepository: NewsRepository,
     private val savedRepository: SavedRepository,
+    private val firebaseAnalytics: FirebaseAnalytics,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 

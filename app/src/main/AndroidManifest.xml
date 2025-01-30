@@ -20,13 +20,37 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.NewsAppCaseStudy">
+            android:theme="@style/Theme.Splash">
+
+            <meta-data
+                android:name="android.windowSplashScreenBackground"
+                android:resource="@color/splash_background"/>
+
+            <meta-data
+                android:name="android.windowSplashScreenAnimatedIcon"
+                android:resource="@drawable/case_study"/>
+
+            <meta-data
+                android:name="android.windowSplashScreenAnimationDuration"
+                android:value="500"/>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:authorities="${applicationId}.firebaseinitprovider"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="firebase-iid" />
+        </provider>
+
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.louislu.news.presentation.main
 
+import android.os.Bundle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,8 +8,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.louislu.core.presentation.analytics.AnalyticsManager
 import com.louislu.news.domain.NewsCategory
 import com.louislu.news.domain.NewsRepository
+import com.louislu.news.domain.SavedRepository
 import com.louislu.news.domain.model.News
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,7 +30,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val newsRepository: NewsRepository
+    private val newsRepository: NewsRepository,
+    private val savedRepository: SavedRepository,
+    private val analyticsManager: AnalyticsManager
 ): ViewModel() {
 
     var mainState by mutableStateOf(MainState())
@@ -85,6 +91,10 @@ class MainViewModel @Inject constructor(
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
 
+    // Favorites
+    private val _favorites = savedRepository.getSaved()
+    val favorites: Flow<List<News>> = _favorites
+
     init {
         mainState = mainState.copy(
             filters = NewsCategory.entries.toList(),
@@ -103,20 +113,43 @@ class MainViewModel @Inject constructor(
             is MainAction.OnFilterUpdate -> {
                 Timber.i("Filter updated to ${action.selected}")
                 _selectedFilter.value = action.selected
+                analyticsManager.logFilterSelected(action.selected.toString())
             }
             is MainAction.OnNewsCardClick -> {
                 Timber.i("News card clicked -> ${action.news.title}")
+                analyticsManager.logNewsClicked(action.news.title)
             }
             MainAction.OnSearchIconClick -> {
-                mainState = mainState.copy(displaySearch = true)
+                mainState = mainState.copy(
+                    displaySearch = true,
+                    displayFavorites = false
+                )
+                analyticsManager.logSearchButtonClicked(if (mainState.displayFavorites) "favorites" else "home")
             }
             is MainAction.OnSearch -> {
                 Timber.i("Searching: ${action.query}")
                 _searchQuery.value = action.query
-
+                analyticsManager.logSearch(action.query)
             }
             MainAction.OnHomeIconClick -> {
-                mainState = mainState.copy(displaySearch = false)
+                mainState = mainState.copy(
+                    displaySearch = false,
+                    displayFavorites = false
+                )
+                _selectedFilter.value = null
+                analyticsManager.logHomeButtonClicked(if (mainState.displaySearch) "search" else "favorites")
+            }
+
+            MainAction.OnFavoritesIconClick -> {
+                mainState = mainState.copy(
+                    displaySearch = false,
+                    displayFavorites = true
+                )
+                analyticsManager.logFavoriteButtonClicked(if (mainState.displaySearch) "search" else "home")
+            }
+
+            MainAction.OnRefresh -> {
+                Timber.i("Refreshing...")
             }
         }
     }

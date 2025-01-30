@@ -16,4 +16,6 @@ data class MainState(
     val pagedFlow: Flow<PagingData<News>> = emptyFlow(),
     val displaySearch: Boolean = false,
     val isSearchActive: Boolean = false,
+    val displayFavorites: Boolean = false,
+    val isRefreshing: Boolean = false
 )
