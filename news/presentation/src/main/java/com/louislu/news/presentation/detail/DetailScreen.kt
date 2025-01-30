@@ -1,5 +1,8 @@
 package com.louislu.news.presentation.detail
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,24 +56,35 @@ fun DetailScreenRoot(
     viewModel: DetailViewModel = hiltViewModel()
 ) {
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    val context = LocalContext.current
 
     DetailScreen(
         news = viewModel.news,
+        saved = viewModel.saved,
         onAction = { action ->
             when(action) {
                 DetailAction.OnBackButtonClick -> {
                     backDispatcher?.onBackPressed()
                 }
-                DetailAction.OnLinkButtonClick -> TODO()
-                DetailAction.OnSaveButtonClick -> TODO()
+                DetailAction.OnLinkButtonClick -> {
+                    viewModel.news.value?.let {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.url))
+                        context.startActivity(intent)
+                    }
+                }
+                DetailAction.OnSaveButtonClick -> {
+                    viewModel.onAction(action)
+                }
             }
         }
     )
 }
 
+
 @Composable
 fun DetailScreen(
     news: StateFlow<News?>,
+    saved: StateFlow<Boolean>,
     onAction: (DetailAction) -> Unit
 ) {
     val state = news.collectAsState()
@@ -77,7 +92,8 @@ fun DetailScreen(
     Scaffold(
         bottomBar = { CustomBottomBar(
             onReturnButtonClick = { onAction(DetailAction.OnBackButtonClick) },
-            onSaveButtonClick = { onAction(DetailAction.OnSaveButtonClick )}
+            onSaveButtonClick = { onAction(DetailAction.OnSaveButtonClick )},
+            saved = saved
         ) }
     ) { paddingValues ->
         Column(
@@ -190,8 +206,11 @@ fun MainContent(
 @Composable
 fun CustomBottomBar(
     onReturnButtonClick: () -> Unit,
-    onSaveButtonClick: () -> Unit
+    onSaveButtonClick: () -> Unit,
+    saved: StateFlow<Boolean>
 ) {
+
+    val state = saved.collectAsState()
 
     BottomAppBar(
         actions = {
@@ -207,7 +226,11 @@ fun CustomBottomBar(
 
             IconButton(onClick = onSaveButtonClick) {
                 Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
+                    imageVector = if(state.value) {
+                        Icons.Default.Favorite
+                    } else {
+                        Icons.Default.FavoriteBorder
+                    },
                     contentDescription = "Save",
                     tint = MaterialTheme.colorScheme.onSurface
                 )
@@ -234,5 +257,5 @@ private fun DetailScreenPreview() {
         content = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.s TikTok, President Donald Trump said Monday night, without elaborating.\\r\\nI would say yes, Trump told reporters aboard Air Force One… [+124 chars]"
     )
 
-    DetailScreen(news = MutableStateFlow<News>(news), onAction = {})
+    DetailScreen(news = MutableStateFlow<News>(news), onAction = {}, saved = MutableStateFlow(true))
 }

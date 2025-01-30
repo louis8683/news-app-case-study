@@ -375,6 +375,78 @@ fun ScrollableCards(
 }
 
 @Composable
+fun FavoriteScrollableCards(
+    favorites: List<News>,
+    onCardClick: (News) -> Unit
+) {
+
+    val lazyListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val newsItems = pagedFlow.collectAsLazyPagingItems()
+
+    LaunchedEffect(newsItems.itemSnapshotList.items) {
+        Timber.i("paged flow updated")
+        coroutineScope.launch {
+            lazyListState.animateScrollToItem(
+                index = 0
+            )
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        state = lazyListState
+    ) {
+        items(
+            count = newsItems.itemCount,
+            key = { index -> "${newsItems[index]?.title ?: "Unknown"}-$index" },
+        ) { index: Int ->
+
+            val news = newsItems[index]
+            news?.let {
+                if (index == 0) {
+                    CustomCardLarge(
+                        news = news,
+                        onClick = { onCardClick(news) }
+                    )
+                }
+                else {
+                    CustomCardSmall(
+                        news = news,
+                        onClick = { onCardClick(news) }
+                    )
+                }
+            }
+        }
+
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "You're all caught up!")
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = {
+                    coroutineScope.launch {
+                        lazyListState.animateScrollToItem(
+                            index = 0
+                        )
+                    }
+                }) {
+                    Text(text = "Back to Top")
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun BottomNavBar(
     onNav: (Int) -> Unit
 ) {
