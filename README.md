@@ -60,6 +60,12 @@ A modern news application that provides real-time headlines and articles using N
 
 ## 🚀 Getting Started
 
+- Add your NewsAPI API key to the local.properties file
+
+`API_KEY = "abcde12345..."`
+
+- Add your `google-services.json` file to the app module (acquired through Firebase console)
+
 ### Prerequisites
 
 - Android Studio Koala
