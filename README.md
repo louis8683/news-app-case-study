@@ -48,15 +48,15 @@ A modern news application that provides real-time headlines and articles using N
 
 ## 🏗 Project Structure
 
-📂 app
-📂 core
-┣ 📂 data        # Data sources (API, Database)
-┣ 📂 domain      # Business logic and use cases
-┣ 📂 presentation # UI (Compose screens, ViewModels)
-📂 news
-┣ 📂 data        # Data sources (API, Database)
-┣ 📂 domain      # Business logic and use cases
-┣ 📂 presentation # UI (Compose screens, ViewModels)
+📂 app\
+📂 core\
+┣ 📂 data        # Data sources (API, Database)\
+┣ 📂 domain      # Business logic and use cases\
+┣ 📂 presentation # UI (Compose screens, ViewModels)\
+📂 news\
+┣ 📂 data        # Data sources (API, Database)\
+┣ 📂 domain      # Business logic and use cases\
+┣ 📂 presentation # UI (Compose screens, ViewModels)\
 
 ## 🚀 Getting Started
 
