@@ -90,7 +90,7 @@ import java.util.Locale.Category
 
 @Composable
 fun MainScreenRoot(
-    onNewsCardClick: () -> Unit,
+    onNewsCardClick: (News) -> Unit,
     viewModel: MainViewModel = hiltViewModel()
 ) {
     MainScreen(
@@ -101,7 +101,7 @@ fun MainScreenRoot(
             when(action) {
                 is MainAction.OnNewsCardClick -> {
                     viewModel.onAction(action)
-                    onNewsCardClick()
+                    onNewsCardClick(action.news)
                 }
                 is MainAction.OnFilterUpdate -> {
                     viewModel.onAction(action)

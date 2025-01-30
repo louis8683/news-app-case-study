@@ -19,6 +19,10 @@ class RoomLocalNewsDataSource @Inject constructor(
         }
     }
 
+    override fun getNews(order: Int): Flow<News> {
+        return newsDao.getNewsByOrder(order).map { entity -> entity.toNews() }
+    }
+
     override suspend fun upsertNews(news: News): Result<NewsId, DataError.Local> {
         return try {
             val entity = news.toNewsEntity()

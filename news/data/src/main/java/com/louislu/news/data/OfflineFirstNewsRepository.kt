@@ -72,6 +72,10 @@ class OfflineFirstNewsRepository(
         }
     }
 
+    override suspend fun getNews(order: Int): Flow<News> {
+        return localNewsDatasource.getNews(order)
+    }
+
     override suspend fun deleteAllNews() {
         localNewsDatasource.deleteAllNews()
     }

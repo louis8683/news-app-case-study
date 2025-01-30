@@ -71,8 +71,8 @@ class MainViewModel @Inject constructor(
                     newsRepository.getNewsPaged(category)
                 }
                 else -> {
-                    Timber.i("No changes detected, returning empty PagingData")
-                    flowOf(PagingData.empty())
+                    Timber.i("No changes detected, likely the first fetch")
+                    newsRepository.getNewsPaged()
                 }
             }
         }

@@ -19,6 +19,9 @@ interface NewsDao {
     @Query("SELECT * FROM newsentity ORDER BY fetchOrder ASC")
     fun getNews(): Flow<List<NewsEntity>>
 
+    @Query("SELECT * FROM newsentity WHERE fetchOrder = :order LIMIT 1")
+    fun getNewsByOrder(order: Int): Flow<NewsEntity>
+
     @Query("DELETE FROM newsentity WHERE id=:id")
     suspend fun deleteNews(id: Long)
 
