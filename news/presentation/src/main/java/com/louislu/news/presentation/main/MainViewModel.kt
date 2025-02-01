@@ -8,10 +8,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.louislu.core.presentation.analytics.AnalyticsManager
-import com.louislu.news.domain.NewsCategory
+import com.louislu.core.domain.enumclass.NewsCategory
 import com.louislu.news.domain.NewsRepository
-import com.louislu.news.domain.SavedRepository
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.repository.SavedRepository
+import com.louislu.core.domain.model.News
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

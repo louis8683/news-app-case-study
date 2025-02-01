@@ -5,7 +5,7 @@ import com.louislu.core.domain.util.DataError
 import com.louislu.core.domain.util.Result
 import com.louislu.news.domain.datasource.LocalNewsDataSource
 import com.louislu.news.domain.datasource.NewsId
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.model.News
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

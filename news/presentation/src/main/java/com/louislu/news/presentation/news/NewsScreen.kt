@@ -9,10 +9,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
-import com.louislu.news.domain.NewsCategory
-import com.louislu.news.domain.model.News
-import com.louislu.news.presentation.main.components.AppBarWithTitle
-import com.louislu.news.presentation.shared.components.ScrollableCards
+import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.model.News
+import com.louislu.core.presentation.AppBarWithTitle
+import com.louislu.core.presentation.ScrollableCards
 import com.louislu.news.presentation.news.components.CategoryChipGroup
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow

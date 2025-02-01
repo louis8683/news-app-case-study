@@ -1,7 +1,7 @@
 package com.louislu.news.presentation.main
 
-import com.louislu.news.domain.NewsCategory
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.model.News
 
 sealed interface MainAction {
     data class OnNewsCardClick(val news: News): MainAction

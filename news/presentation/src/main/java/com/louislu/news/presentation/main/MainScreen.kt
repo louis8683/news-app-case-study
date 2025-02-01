@@ -1,35 +1,4 @@
 package com.louislu.news.presentation.main
-import android.content.res.Configuration
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.PagingData
-import com.louislu.core.presentation.designsystem.theme.NewsAppCaseStudyTheme
-import com.louislu.news.domain.NewsCategory
-import com.louislu.news.domain.model.News
-import kotlinx.coroutines.launch
-import java.time.Instant
-import java.time.ZoneId
-import com.louislu.news.presentation.main.components.AppBarWithTitle
-import com.louislu.news.presentation.main.components.BottomNavBar
-import com.louislu.news.presentation.news.components.CategoryChipGroup
-import com.louislu.news.presentation.main.components.CustomSearchBar
-import com.louislu.news.presentation.main.components.FavoriteScrollableCards
-import com.louislu.news.presentation.shared.components.ScrollableCards
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.emptyFlow
 
 
 //@Composable
@@ -157,7 +126,7 @@ import kotlinx.coroutines.flow.emptyFlow
 //
 //    }
 //}
-//
+
 //@Preview(name = "Light Mode", uiMode = Configuration.UI_MODE_NIGHT_NO)
 //@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 //@Composable

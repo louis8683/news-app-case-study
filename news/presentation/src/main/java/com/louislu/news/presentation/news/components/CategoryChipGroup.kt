@@ -15,8 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.louislu.news.domain.NewsCategory
-import com.louislu.news.presentation.main.displayName
+import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.presentation.displayName
 import com.louislu.news.presentation.news.NewsState
 import kotlinx.coroutines.flow.StateFlow
 

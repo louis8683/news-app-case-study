@@ -9,7 +9,7 @@ import com.louislu.core.domain.util.Result
 import com.louislu.news.data.room.NewsDatabase
 import com.louislu.news.data.room.NewsEntity
 import com.louislu.news.data.room.toNewsEntity
-import com.louislu.news.domain.NewsCategory
+import com.louislu.core.domain.enumclass.NewsCategory
 import com.louislu.news.domain.datasource.RemoteNewsDataSource
 import retrofit2.HttpException
 import timber.log.Timber

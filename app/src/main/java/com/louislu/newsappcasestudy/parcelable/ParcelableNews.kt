@@ -1,7 +1,7 @@
 package com.louislu.newsappcasestudy.parcelable
 
 import android.os.Parcelable
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.model.News
 import kotlinx.parcelize.Parcelize
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter

@@ -2,10 +2,10 @@ package com.louislu.news.data.network
 
 import com.louislu.core.domain.util.DataError
 import com.louislu.core.domain.util.Result
-import com.louislu.news.domain.NewsCategory
-import com.louislu.news.domain.NewsSource
+import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.enumclass.NewsSource
 import com.louislu.news.domain.datasource.RemoteNewsDataSource
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.model.News
 import retrofit2.HttpException
 import timber.log.Timber
 import javax.inject.Inject

@@ -1,6 +1,6 @@
 package com.louislu.news.data.room
 
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.model.News
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset

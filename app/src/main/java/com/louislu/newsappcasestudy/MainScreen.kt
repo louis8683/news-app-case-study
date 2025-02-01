@@ -20,26 +20,29 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.louislu.core.domain.model.News
+import com.louislu.favorites.presentation.FavoritesScreenRoot
 import com.louislu.news.presentation.news.NewsScreenRoot
+import com.louislu.news.presentation.search.SearchScreenRoot
 import kotlinx.serialization.Serializable
 
 
 data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
 
-@Serializable data object News
-@Serializable data object Search
-@Serializable data object Favorites
+@Serializable data object NewsRoute
+@Serializable data object SearchRoute
+@Serializable data object FavoritesRoute
 
 val topLevelRoutes = listOf(
-    TopLevelRoute("News", News, Icons.Default.Home),
-    TopLevelRoute("Search", Search, Icons.Default.Search),
-    TopLevelRoute("Favorites", Favorites, Icons.Default.Favorite)
+    TopLevelRoute("News", NewsRoute, Icons.Default.Home),
+    TopLevelRoute("Search", SearchRoute, Icons.Default.Search),
+    TopLevelRoute("Favorites", FavoritesRoute, Icons.Default.Favorite)
 )
 
 @Composable
 fun MainScreen(
-    navigateToDetailWithNews: (com.louislu.news.domain.model.News) -> Unit,
-    navigateToDetailWithSaved: (Int) -> Unit
+    navigateToDetailWithNews: (News) -> Unit,
+    navigateToDetailWithSaved: (News) -> Unit
 ) {
     val navController = rememberNavController()
 
@@ -75,12 +78,12 @@ fun MainScreen(
     )  { innerPadding ->
         androidx.navigation.compose.NavHost(
             navController = navController,
-            startDestination = News,
+            startDestination = NewsRoute,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable<News> { NewsScreenRoot(onNewsCardClick = { news -> navigateToDetailWithNews(news) }) }
-            composable<Search> {  }
-            composable<Favorites> {  }
+            composable<NewsRoute> { NewsScreenRoot(onNewsCardClick = { news -> navigateToDetailWithNews(news) }) }
+            composable<SearchRoute> { SearchScreenRoot(onNewsCardClick = { news -> navigateToDetailWithNews(news) }) }
+            composable<FavoritesRoute> { FavoritesScreenRoot(onNewsCardClick = { news -> navigateToDetailWithSaved(news) }) }
         }
     }
 }

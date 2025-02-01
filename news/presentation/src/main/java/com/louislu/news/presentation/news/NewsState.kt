@@ -1,6 +1,6 @@
 package com.louislu.news.presentation.news
 
-import com.louislu.news.domain.NewsCategory
+import com.louislu.core.domain.enumclass.NewsCategory
 
 
 data class NewsState(

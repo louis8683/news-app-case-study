@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.model.News
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 

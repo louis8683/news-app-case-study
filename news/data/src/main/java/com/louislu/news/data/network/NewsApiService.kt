@@ -2,7 +2,7 @@ package com.louislu.news.data.network
 
 import com.louislu.news.data.BuildConfig
 import com.louislu.news.data.network.dto.NewsResponseDto
-import com.louislu.news.domain.NewsSource
+import com.louislu.core.domain.enumclass.NewsSource
 import retrofit2.http.GET
 import retrofit2.http.Query
 

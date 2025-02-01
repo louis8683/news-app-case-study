@@ -1,7 +1,7 @@
 package com.louislu.news.data.network
 
 import com.louislu.news.data.network.dto.NewsDto
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.model.News
 import java.time.Instant
 import java.time.ZoneId
 

@@ -11,8 +11,8 @@ import com.louislu.news.data.room.NewsDatabase
 import com.louislu.news.data.room.NewsEntity
 import com.louislu.news.data.room.RoomLocalNewsDataSource
 import com.louislu.news.data.room.toNews
-import com.louislu.news.domain.NewsCategory
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.model.News
 import com.louislu.news.domain.NewsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

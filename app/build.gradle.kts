@@ -101,6 +101,9 @@ dependencies {
     implementation(projects.news.presentation)
     implementation(projects.news.domain)
     implementation(projects.news.data)
+    implementation(projects.favorites.presentation)
+    implementation(projects.favorites.domain)
+    implementation(projects.favorites.data)
 }
 
 // Allow references to generated code

@@ -1,10 +1,8 @@
 package com.louislu.news.domain
 
 import androidx.paging.PagingData
-import com.louislu.core.domain.util.DataError
-import com.louislu.core.domain.util.EmptyResult
-import com.louislu.news.domain.datasource.NewsId
-import com.louislu.news.domain.model.News
+import com.louislu.core.domain.model.News
+import com.louislu.core.domain.enumclass.NewsCategory
 import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {

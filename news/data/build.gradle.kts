@@ -61,11 +61,13 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // Room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     testImplementation(libs.androidx.room.testing)
 
+    // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
@@ -79,6 +81,7 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.room.paging)
 
+    // Timber
     implementation(libs.timber)
 
     implementation(projects.news.domain)
