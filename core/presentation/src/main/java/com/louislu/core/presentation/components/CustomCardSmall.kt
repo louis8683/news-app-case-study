@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
-import com.louislu.core.presentation.imageMap
+import com.louislu.core.presentation.util.imageMap
 import com.louislu.core.domain.model.News
 
 

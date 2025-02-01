@@ -1,4 +1,4 @@
-package com.louislu.core.presentation
+package com.louislu.core.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

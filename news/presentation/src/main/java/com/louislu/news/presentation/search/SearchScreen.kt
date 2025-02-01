@@ -10,9 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import com.louislu.core.domain.model.News
-import com.louislu.core.presentation.AppBarWithTitle
+import com.louislu.core.presentation.components.AppBarWithTitle
 import com.louislu.news.presentation.search.components.CustomSearchBar
-import com.louislu.core.presentation.ScrollableCards
+import com.louislu.core.presentation.components.ScrollableCards
 import kotlinx.coroutines.flow.Flow
 
 

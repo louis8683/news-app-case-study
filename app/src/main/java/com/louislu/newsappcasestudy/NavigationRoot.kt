@@ -1,7 +1,6 @@
 package com.louislu.newsappcasestudy
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -13,9 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.louislu.news.presentation.detail.DetailScreenRoot
-import com.louislu.newsappcasestudy.parcelable.ParcelableNews
-import timber.log.Timber
+import com.louislu.core.presentation.detail.DetailScreenRoot
 
 @Composable
 fun NavigationRoot(
@@ -45,9 +42,11 @@ private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
         composable(route = "mainScreen") {
             MainScreen(
                 navigateToDetailWithNews = { news ->
-                    navController.navigate("detail/${news.order}")
+                    navController.navigate("detail?order=${news.order}")
                 },
-                navigateToDetailWithSaved = { /*TODO*/ }
+                navigateToDetailWithSaved = { news ->
+                    navController.navigate("detail?title=${news.title}")
+                }
             )
         }
 
@@ -60,11 +59,19 @@ private fun NavGraphBuilder.mainGraph(navController: NavHostController) {
 //        }
 
         composable(
-            route = "detail/{order}",
-            arguments = listOf(navArgument("order") { type = NavType.IntType }) // Pass order as an argument
-        ) { backStackEntry ->
-            val order = backStackEntry.arguments?.getInt("order") ?: -1 // Get order from arguments
-
+            route = "detail?order={order}&title={title}",
+            arguments = listOf(
+                navArgument("order") {
+                    type = NavType.IntType
+                    defaultValue = -1
+                },
+                navArgument("title") {
+                    type = NavType.StringType
+                    defaultValue = null
+                    nullable = true
+                },
+            )
+        ) {
             DetailScreenRoot() // Pass order to DetailScreenRoot
         }
     }

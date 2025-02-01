@@ -1,4 +1,4 @@
-package com.louislu.core.presentation
+package com.louislu.core.presentation.util
 
 import android.content.Context
 import androidx.annotation.StringRes

@@ -8,6 +8,8 @@ interface SavedRepository {
 
     fun getSaved(): Flow<List<News>>
 
+    fun getNewsByTitle(title: String): Flow<News?>
+
     suspend fun save(news: News)
 
     suspend fun deleteNews(title: String)

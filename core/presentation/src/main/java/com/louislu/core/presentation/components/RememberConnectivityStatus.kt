@@ -1,4 +1,4 @@
-package com.louislu.core.presentation
+package com.louislu.core.presentation.components
 
 import android.content.Context
 import android.net.ConnectivityManager

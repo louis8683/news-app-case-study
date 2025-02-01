@@ -73,12 +73,15 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     debugImplementation(libs.ui.tooling)
 
+    // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
 
+    // Timber
     implementation(libs.timber)
 
+    // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 

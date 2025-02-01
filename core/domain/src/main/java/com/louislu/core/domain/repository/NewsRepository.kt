@@ -1,8 +1,8 @@
-package com.louislu.news.domain
+package com.louislu.core.domain.repository
 
 import androidx.paging.PagingData
 import com.louislu.core.domain.model.News
-import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.type.NewsCategory
 import kotlinx.coroutines.flow.Flow
 
 interface NewsRepository {
@@ -13,7 +13,7 @@ interface NewsRepository {
 //    suspend fun fetchHeadlines(category: NewsCategory? = null): EmptyResult<DataError>
 
     suspend fun getNewsPaged(category: NewsCategory? = null, query: String? = null): Flow<PagingData<News>>
-    suspend fun getNews(order: Int): Flow<News>
+    suspend fun getNews(order: Int): Flow<News?>
 
 //    suspend fun upsertNews(news: News): EmptyResult<DataError>
 //    suspend fun upsertNewsList(newsList: List<News>): EmptyResult<DataError>

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.louislu.core.presentation.analytics.AnalyticsManager
-import com.louislu.news.domain.NewsRepository
+import com.louislu.core.domain.repository.NewsRepository
 import com.louislu.core.domain.model.News
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi

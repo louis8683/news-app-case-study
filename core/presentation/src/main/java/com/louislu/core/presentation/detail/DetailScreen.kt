@@ -1,4 +1,4 @@
-package com.louislu.news.presentation.detail
+package com.louislu.core.presentation.detail
 
 import android.content.Intent
 import android.net.Uri
@@ -11,18 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.louislu.core.domain.model.News
-import com.louislu.news.presentation.detail.components.AppBarWithImage
-import com.louislu.news.presentation.detail.components.CustomBottomBar
-import com.louislu.news.presentation.detail.components.MainContent
-import com.louislu.core.presentation.imageMap
-import com.louislu.core.presentation.AppBarWithTitle
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.louislu.core.presentation.detail.components.AppBarWithImage
+import com.louislu.core.presentation.detail.components.CustomBottomBar
+import com.louislu.core.presentation.detail.components.MainContent
+import com.louislu.core.presentation.util.imageMap
+import com.louislu.core.presentation.components.AppBarWithTitle
 import kotlinx.coroutines.flow.StateFlow
-import java.time.Instant
-import java.time.ZoneId
+
 
 @Composable
 fun DetailScreenRoot(
@@ -65,7 +62,7 @@ fun DetailScreen(
     Scaffold(
         bottomBar = { CustomBottomBar(
             onReturnButtonClick = { onAction(DetailAction.OnBackButtonClick) },
-            onSaveButtonClick = { onAction(DetailAction.OnSaveButtonClick )},
+            onSaveButtonClick = { onAction(DetailAction.OnSaveButtonClick)},
             saved = saved
         ) }
     ) { paddingValues ->
@@ -94,21 +91,21 @@ fun DetailScreen(
 }
 
 
-@Preview
-@Composable
-private fun DetailScreenPreview() {
-    val news = News(
-        order = 1,
-        sourceId = "bloomberg",
-        sourceName = "Bloomberg",
-        author = "Stephanie Lai, Josh Wingrove",
-        title = "Trump Says Microsoft Eyeing TikTok Bid With App’s Future in US Unclear - Bloomberg",
-        description = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.’s TikTok, President Donald Trump said Monday night, without elaborating.",
-        url = "https://www.bloomberg.com/news/articles/2025-01-28/trump-says-microsoft-eyeing-tiktok-bid-with-app-s-future-unclear",
-        urlToImage = "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iAUVtbQTpnv8/v1/1200x800.jpg",
-        publishedAt = Instant.parse("2025-01-28T02:44:00Z").atZone(ZoneId.of("UTC")),
-        content = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.s TikTok, President Donald Trump said Monday night, without elaborating.\\r\\nI would say yes, Trump told reporters aboard Air Force One… [+124 chars]"
-    )
-
-    DetailScreen(news = MutableStateFlow<News>(news), onAction = {}, saved = MutableStateFlow(true))
-}
+//@Preview
+//@Composable
+//private fun DetailScreenPreview() {
+//    val news = News(
+//        order = 1,
+//        sourceId = "bloomberg",
+//        sourceName = "Bloomberg",
+//        author = "Stephanie Lai, Josh Wingrove",
+//        title = "Trump Says Microsoft Eyeing TikTok Bid With App’s Future in US Unclear - Bloomberg",
+//        description = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.’s TikTok, President Donald Trump said Monday night, without elaborating.",
+//        url = "https://www.bloomberg.com/news/articles/2025-01-28/trump-says-microsoft-eyeing-tiktok-bid-with-app-s-future-unclear",
+//        urlToImage = "https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iAUVtbQTpnv8/v1/1200x800.jpg",
+//        publishedAt = Instant.parse("2025-01-28T02:44:00Z").atZone(ZoneId.of("UTC")),
+//        content = "Microsoft Corp. is in talks to acquire the US arm of ByteDance Ltd.s TikTok, President Donald Trump said Monday night, without elaborating.\\r\\nI would say yes, Trump told reporters aboard Air Force One… [+124 chars]"
+//    )
+//
+//    DetailScreen(news = MutableStateFlow<News>(news), onAction = {}, saved = MutableStateFlow(true))
+//}

@@ -3,6 +3,7 @@ package com.louislu.favorites.data
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import com.louislu.core.domain.model.News
 import kotlinx.coroutines.flow.Flow
 
 
@@ -13,6 +14,9 @@ interface SavedDao {
 
     @Query("SELECT * FROM savednewsentity")
     fun getSavedNews(): Flow<List<SavedNewsEntity>> // Get saved articles
+
+    @Query("SELECT * FROM savednewsentity WHERE title = :title LIMIT 1")
+    fun getNewsByTitle(title: String): Flow<SavedNewsEntity?>
 
     @Query("SELECT COUNT(*) FROM savednewsentity WHERE title = :title")
     suspend fun isNewsSaved(title: String): Int // Check if a news article is saved

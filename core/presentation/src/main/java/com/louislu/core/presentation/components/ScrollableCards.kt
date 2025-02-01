@@ -1,4 +1,4 @@
-package com.louislu.core.presentation
+package com.louislu.core.presentation.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -24,9 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.louislu.core.presentation.components.CustomCardLarge
-import com.louislu.core.presentation.components.CustomCardSmall
 import com.louislu.core.domain.model.News
+import com.louislu.core.presentation.BuildConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.louislu.news.presentation.detail
+package com.louislu.core.presentation.detail
 
 sealed interface DetailAction {
     data object OnBackButtonClick: DetailAction

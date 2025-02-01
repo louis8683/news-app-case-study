@@ -1,4 +1,4 @@
-package com.louislu.news.presentation.detail.components
+package com.louislu.core.presentation.detail.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

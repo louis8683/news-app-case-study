@@ -1,6 +1,6 @@
-package com.louislu.core.presentation
+package com.louislu.core.presentation.util
 
-import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.type.NewsCategory
 
 
 fun NewsCategory.displayName(): String {

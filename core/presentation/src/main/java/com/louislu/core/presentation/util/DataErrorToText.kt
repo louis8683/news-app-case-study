@@ -1,6 +1,7 @@
-package com.louislu.core.presentation
+package com.louislu.core.presentation.util
 
 import com.louislu.core.domain.util.DataError
+import com.louislu.core.presentation.R
 
 fun DataError.asUiText(): UiText {
     return when(this) {

@@ -4,7 +4,7 @@ import com.louislu.news.data.OfflineFirstNewsRepository
 import com.louislu.news.data.network.RetrofitRemoteNewsDataSource
 import com.louislu.news.data.room.NewsDatabase
 import com.louislu.news.data.room.RoomLocalNewsDataSource
-import com.louislu.news.domain.NewsRepository
+import com.louislu.core.domain.repository.NewsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

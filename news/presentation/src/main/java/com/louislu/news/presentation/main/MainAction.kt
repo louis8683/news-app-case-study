@@ -1,6 +1,6 @@
 package com.louislu.news.presentation.main
 
-import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.type.NewsCategory
 import com.louislu.core.domain.model.News
 
 sealed interface MainAction {

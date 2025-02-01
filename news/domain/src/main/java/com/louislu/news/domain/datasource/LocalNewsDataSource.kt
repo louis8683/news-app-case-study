@@ -10,7 +10,7 @@ typealias NewsId = Long
 interface LocalNewsDataSource {
     fun getNews(): Flow<List<News>>
 
-    fun getNews(order: Int): Flow<News>
+    fun getNews(order: Int): Flow<News?>
 
     suspend fun upsertNews(news: News): Result<NewsId, DataError.Local>
 

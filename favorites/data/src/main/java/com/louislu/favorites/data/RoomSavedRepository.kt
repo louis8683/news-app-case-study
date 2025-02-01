@@ -16,6 +16,11 @@ class RoomSavedRepository @Inject constructor(
         return savedDao.getSavedNews().map { list -> list.map { it.toNews() } }
     }
 
+    override fun getNewsByTitle(title: String): Flow<News?> {
+        Timber.i("getNewsByTitle")
+        return savedDao.getNewsByTitle(title).map { it?.toNews() }
+    }
+
     override suspend fun save(news: News) {
         Timber.i("save(${news.title})")
         return savedDao.upsertNews(news.toSavedNewsEntity())

@@ -1,4 +1,4 @@
-package com.louislu.core.domain.enumclass
+package com.louislu.core.domain.type
 
 enum class NewsSource(val apiId: String) {
     ABC_NEWS("abc-news"),

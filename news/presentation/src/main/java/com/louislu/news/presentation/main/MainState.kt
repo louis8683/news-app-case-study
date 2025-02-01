@@ -1,7 +1,7 @@
 package com.louislu.news.presentation.main
 
 import androidx.paging.PagingData
-import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.type.NewsCategory
 import com.louislu.core.domain.model.News
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow

@@ -11,9 +11,9 @@ import com.louislu.news.data.room.NewsDatabase
 import com.louislu.news.data.room.NewsEntity
 import com.louislu.news.data.room.RoomLocalNewsDataSource
 import com.louislu.news.data.room.toNews
-import com.louislu.core.domain.enumclass.NewsCategory
+import com.louislu.core.domain.type.NewsCategory
 import com.louislu.core.domain.model.News
-import com.louislu.news.domain.NewsRepository
+import com.louislu.core.domain.repository.NewsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -72,7 +72,7 @@ class OfflineFirstNewsRepository(
         }
     }
 
-    override suspend fun getNews(order: Int): Flow<News> {
+    override suspend fun getNews(order: Int): Flow<News?> {
         return localNewsDatasource.getNews(order)
     }
 

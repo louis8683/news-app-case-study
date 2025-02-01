@@ -2,8 +2,8 @@ package com.louislu.news.data.network
 
 import com.louislu.core.domain.util.DataError
 import com.louislu.core.domain.util.Result
-import com.louislu.core.domain.enumclass.NewsCategory
-import com.louislu.core.domain.enumclass.NewsSource
+import com.louislu.core.domain.type.NewsCategory
+import com.louislu.core.domain.type.NewsSource
 import com.louislu.news.domain.datasource.RemoteNewsDataSource
 import com.louislu.core.domain.model.News
 import retrofit2.HttpException

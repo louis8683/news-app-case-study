@@ -1,4 +1,4 @@
-package com.louislu.core.domain.enumclass
+package com.louislu.core.domain.type
 
 enum class NewsCategory(val apiValue: String) {
     BUSINESS("business"),

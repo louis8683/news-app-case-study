@@ -1,4 +1,6 @@
-package com.louislu.core.presentation
+package com.louislu.core.presentation.util
+
+import com.louislu.core.presentation.R
 
 
 val imageMap = mapOf(
