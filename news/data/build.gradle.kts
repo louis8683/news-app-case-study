@@ -76,8 +76,8 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.okhttp)
 
-    implementation("androidx.paging:paging-runtime:3.3.5")
-    implementation("androidx.room:room-paging:2.6.1")
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.room.paging)
 
     implementation(libs.timber)
 

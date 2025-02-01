@@ -1,4 +1,4 @@
-package com.louislu.news.presentation.main.components
+package com.louislu.news.presentation.news.components
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -16,14 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.louislu.news.domain.NewsCategory
-import com.louislu.news.presentation.main.MainState
 import com.louislu.news.presentation.main.displayName
+import com.louislu.news.presentation.news.NewsState
 import kotlinx.coroutines.flow.StateFlow
 
 
 @Composable
 fun CategoryChipGroup(
-    state: MainState,
+    state: NewsState,
     selectedFilterState: StateFlow<NewsCategory?>,
     onFilterUpdate: (NewsCategory?) -> Unit
 ) {

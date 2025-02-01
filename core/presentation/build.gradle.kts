@@ -52,8 +52,8 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.com.google.firebase.firebase.analytics)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

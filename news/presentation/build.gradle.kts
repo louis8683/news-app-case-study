@@ -83,14 +83,14 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     // Paging
-    implementation("androidx.paging:paging-runtime:3.3.5")
-    implementation("androidx.paging:paging-compose:3.3.5")
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.google.firebase.analytics)
 
-    implementation("com.google.accompanist:accompanist-swiperefresh:0.33.2-alpha")
+    implementation(libs.accompanist.swiperefresh)
 
 
     testImplementation(libs.junit)

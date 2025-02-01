@@ -8,6 +8,7 @@ plugins {
     id("kotlin-parcelize")
 
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.serialization")
 
 //    id('com.google.gms.google-services')
 }
@@ -87,10 +88,12 @@ dependencies {
     implementation(libs.timber)
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.8.0"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 
-    implementation("androidx.core:core-splashscreen:1.0.0")
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.androidx.core.splashscreen)
 
     implementation(projects.core.presentation)
     implementation(projects.core.domain)

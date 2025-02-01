@@ -1,4 +1,4 @@
-package com.louislu.news.presentation.main.components
+package com.louislu.news.presentation.shared.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +26,9 @@ import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.louislu.news.domain.model.News
 import com.louislu.news.presentation.BuildConfig
+import com.louislu.news.presentation.main.components.CustomCardLarge
+import com.louislu.news.presentation.main.components.CustomCardSmall
+import com.louislu.news.presentation.main.components.rememberConnectivityStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -58,7 +61,7 @@ fun ScrollableCards(
 
     // Check API key on launch
     LaunchedEffect(Unit) {
-        if (BuildConfig.API_KEY.isNullOrEmpty()) {
+        if (BuildConfig.API_KEY.isEmpty()) {
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(
                     message = "API_KEY is missing!",
