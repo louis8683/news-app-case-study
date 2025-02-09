@@ -65,8 +65,8 @@ class DetailViewModel @Inject constructor(
 
     fun onAction(action: DetailAction) {
         when(action) {
-            DetailAction.OnBackButtonClick -> TODO()
-            DetailAction.OnLinkButtonClick -> TODO()
+            DetailAction.OnBackButtonClick -> {}
+            DetailAction.OnLinkButtonClick -> {}
             DetailAction.OnSaveButtonClick -> {
                 if (!_saved.value) {
                     viewModelScope.launch {

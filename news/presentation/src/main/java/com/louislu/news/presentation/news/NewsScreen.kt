@@ -11,7 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import com.louislu.core.domain.type.NewsCategory
 import com.louislu.core.domain.model.News
-import com.louislu.core.presentation.components.AppBarWithTitle
+import com.louislu.core.presentation.components.AppBar
 import com.louislu.core.presentation.components.ScrollableCards
 import com.louislu.news.presentation.news.components.CategoryChipGroup
 import kotlinx.coroutines.flow.Flow
@@ -54,7 +54,7 @@ fun NewsScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        AppBarWithTitle()
+        AppBar()
         CategoryChipGroup(
             state = state,
             selectedFilterState = filterState,

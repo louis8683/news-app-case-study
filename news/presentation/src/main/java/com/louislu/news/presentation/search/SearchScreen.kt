@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import com.louislu.core.domain.model.News
-import com.louislu.core.presentation.components.AppBarWithTitle
+import com.louislu.core.presentation.components.AppBar
 import com.louislu.news.presentation.search.components.CustomSearchBar
 import com.louislu.core.presentation.components.ScrollableCards
 import kotlinx.coroutines.flow.Flow
@@ -52,7 +52,7 @@ fun SearchScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        AppBarWithTitle()
+        AppBar()
         CustomSearchBar(
             onSearch = { search ->
                 onAction(SearchAction.OnSearch(search))

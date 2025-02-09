@@ -9,7 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.louislu.core.domain.model.News
-import com.louislu.core.presentation.components.AppBarWithTitle
+import com.louislu.core.presentation.components.AppBar
 import com.louislu.favorites.presentation.components.FavoriteScrollableCards
 import kotlinx.coroutines.flow.Flow
 
@@ -44,7 +44,7 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        AppBarWithTitle()
+        AppBar()
 
         FavoriteScrollableCards(
             favorites = favoritesFlow,
