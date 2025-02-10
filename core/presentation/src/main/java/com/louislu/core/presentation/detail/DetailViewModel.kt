@@ -28,10 +28,10 @@ class DetailViewModel @Inject constructor(
     private val newsTitle: String? = savedStateHandle["title"]
 
     private val _news = MutableStateFlow<News?>(null)
-    val news: StateFlow<News?> = _news.asStateFlow()
+    val news: StateFlow<News?> = _news
 
     private val _saved = MutableStateFlow(false)
-    val saved: StateFlow<Boolean> = _saved.asStateFlow()
+    val saved: StateFlow<Boolean> = _saved
 
     init {
 

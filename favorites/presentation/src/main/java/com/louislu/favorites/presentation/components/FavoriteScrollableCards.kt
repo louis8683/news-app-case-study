@@ -13,8 +13,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,13 +29,16 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FavoriteScrollableCards(
-    favorites: Flow<List<News>>,
+    favorites: List<News>,
     onCardClick: (News) -> Unit
 ) {
 
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    val newsList by favorites.collectAsState(initial = emptyList())
+
+    LaunchedEffect(favorites) {
+        lazyListState.animateScrollToItem(0)
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -42,12 +47,11 @@ fun FavoriteScrollableCards(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         state = lazyListState
     ) {
-        items(newsList) { news ->
+        items(favorites, key = { it.url }) { news ->
             CustomCardSmall(
                 news = news,
                 onClick = { onCardClick(news) }
             )
-
         }
 
         item {

@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -19,8 +21,10 @@ fun FavoritesScreenRoot(
     onNewsCardClick: (News) -> Unit,
     viewModel: FavoritesViewModel = hiltViewModel()
 ) {
+    val favorites by viewModel.favorites.collectAsState()
+
     MainScreen(
-        favoritesFlow = viewModel.favorites,
+        favorites = favorites,
         onAction = { action ->
             when(action) {
                 is FavoritesAction.OnNewsCardClick -> {
@@ -34,12 +38,9 @@ fun FavoritesScreenRoot(
 
 @Composable
 fun MainScreen(
-    favoritesFlow: Flow<List<News>>,
+    favorites: List<News>,
     onAction: (FavoritesAction) -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,7 +48,7 @@ fun MainScreen(
         AppBar()
 
         FavoriteScrollableCards(
-            favorites = favoritesFlow,
+            favorites = favorites,
             onCardClick = { news -> onAction(FavoritesAction.OnNewsCardClick(news)) }
         )
 
