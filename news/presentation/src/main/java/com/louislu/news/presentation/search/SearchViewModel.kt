@@ -12,6 +12,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import timber.log.Timber
 import javax.inject.Inject
@@ -24,12 +25,15 @@ class SearchViewModel @Inject constructor(
 ): ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val pagedFlow: Flow<PagingData<News>> = _searchQuery
         .flatMapLatest { query ->
-            newsRepository.getNewsPaged(query = query)
+            if (query.isNotEmpty()) {
+                newsRepository.getNewsPaged(query = query)
+            } else {
+                emptyFlow()
+            }
         }
         .cachedIn(viewModelScope)
 

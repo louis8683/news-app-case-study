@@ -73,6 +73,9 @@ fun ScrollableCards(
             ) { index: Int ->
 
                 val news = newsItems[index]
+
+                Timber.i("News[$index]: $news")
+
                 news?.let {
                     if (index == 0) {
                         CustomCardLarge(
