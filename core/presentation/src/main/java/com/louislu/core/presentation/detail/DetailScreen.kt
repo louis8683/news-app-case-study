@@ -76,11 +76,7 @@ fun DetailScreen(
                 .padding(paddingValues)
         ) {
 
-
-            news?.let { news ->
-                AppBar(source = NewsSource.fromApiId(news.sourceId))
-            } ?:
-                AppBar()
+            AppBar(news = news)
 
             news?.let {
                 MainContent(

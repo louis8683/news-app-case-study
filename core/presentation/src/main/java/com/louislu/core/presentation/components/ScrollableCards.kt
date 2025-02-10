@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -38,14 +39,11 @@ import timber.log.Timber
 fun ScrollableCards(
     pagedFlow: Flow<PagingData<News>>,
     onCardClick: (News) -> Unit,
-    onRefresh: () -> Unit,
-    snackbarHostState: SnackbarHostState,
-    coroutineScope: CoroutineScope
 ) {
 
     val lazyListState = rememberLazyListState()
     val newsItems = pagedFlow.collectAsLazyPagingItems()
-    val isConnected = rememberConnectivityStatus()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(newsItems.itemSnapshotList.items) {
         Timber.i("paged flow updated")
@@ -56,44 +54,9 @@ fun ScrollableCards(
         }
     }
 
-    // Check API key on launch
-    LaunchedEffect(Unit) {
-        if (BuildConfig.API_KEY.isEmpty()) {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = "API_KEY is missing!",
-                    actionLabel = "Dismiss",
-                    duration = SnackbarDuration.Indefinite
-                )
-            }
-        }
-    }
-
-    LaunchedEffect(isConnected) {
-        Timber.i("Connection: $isConnected")
-        if (!isConnected) {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = "No Internet",
-                    actionLabel = "Dismiss",
-                    duration = SnackbarDuration.Short
-                )
-            }
-        } else {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = "Connected to Internet!",
-                    actionLabel = "Dismiss",
-                    duration = SnackbarDuration.Short
-                )
-            }
-        }
-    }
-
     PullToRefreshBox(
         isRefreshing = newsItems.loadState.refresh is LoadState.Loading,
         onRefresh = {
-            onRefresh()
             newsItems.refresh()
         }
     ) {
@@ -121,13 +84,6 @@ fun ScrollableCards(
                             news = news,
                             onClick = {
                                 onCardClick(news)
-                                coroutineScope.launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = "Hello, Snackbar!",
-                                        actionLabel = "Dismiss",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                }
                             }
                         )
                     }

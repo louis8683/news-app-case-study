@@ -30,10 +30,6 @@ fun rememberConnectivityStatus(): Boolean {
 
         val networkRequest = NetworkRequest.Builder().build()
         connectivityManager.registerNetworkCallback(networkRequest, callback)
-
-//        onDispose {
-//            connectivityManager.unregisterNetworkCallback(callback)
-//        }
     }
 
     return networkStatus.value

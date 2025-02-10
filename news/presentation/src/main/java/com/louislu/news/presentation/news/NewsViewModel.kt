@@ -1,5 +1,7 @@
 package com.louislu.news.presentation.news
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,12 +29,11 @@ class NewsViewModel @Inject constructor(
     private val analyticsManager: AnalyticsManager
 ): ViewModel() {
 
-    var newsState by mutableStateOf(NewsState())
-        private set
+    private val _filters = mutableStateOf(NewsCategory.entries.toList())
+    val filters: State<List<NewsCategory>> = _filters
 
     private val _selectedFilter = MutableStateFlow<NewsCategory?>(null)
     val selectedFilter: StateFlow<NewsCategory?> = _selectedFilter
-
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val pagedFlow: Flow<PagingData<News>> = _selectedFilter
@@ -42,11 +43,6 @@ class NewsViewModel @Inject constructor(
         }
         .cachedIn(viewModelScope)
 
-    init {
-        newsState = newsState.copy(
-            filters = NewsCategory.entries.toList(),
-        )
-    }
 
     fun onAction(action: NewsAction) {
         Timber.i("onAction")
@@ -59,10 +55,6 @@ class NewsViewModel @Inject constructor(
             is NewsAction.OnNewsCardClick -> {
                 Timber.i("News card clicked -> ${action.news.title}")
                 analyticsManager.logNewsClicked(action.news.title)
-            }
-            NewsAction.OnRefresh -> {
-                Timber.i("Refreshing...")
-                // TODO
             }
         }
     }

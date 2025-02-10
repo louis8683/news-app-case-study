@@ -17,18 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.louislu.core.domain.type.NewsCategory
 import com.louislu.core.presentation.util.displayName
-import com.louislu.news.presentation.news.NewsState
 import kotlinx.coroutines.flow.StateFlow
 
 
 @Composable
 fun CategoryChipGroup(
-    state: NewsState,
-    selectedFilterState: StateFlow<NewsCategory?>,
+    filters: List<NewsCategory>,
+    selectedFilter: NewsCategory?,
     onFilterUpdate: (NewsCategory?) -> Unit
 ) {
-    val categories = listOf(null) + state.filters
-    val selectedFilter by selectedFilterState.collectAsState()
+    val categories = listOf(null) + filters
 
     Row(
         modifier = Modifier

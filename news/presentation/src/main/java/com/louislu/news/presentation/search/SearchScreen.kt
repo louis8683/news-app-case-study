@@ -2,10 +2,7 @@ package com.louislu.news.presentation.search
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
@@ -45,9 +42,6 @@ fun SearchScreen(
     pagedFlow: Flow<PagingData<News>>,
     onAction: (SearchAction) -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,10 +56,7 @@ fun SearchScreen(
             pagedFlow = pagedFlow,
             onCardClick = { news ->
                 onAction(SearchAction.OnNewsCardClick(news))
-            },
-            onRefresh = { onAction(SearchAction.OnRefresh) },
-            snackbarHostState = snackbarHostState,
-            coroutineScope = scope
+            }
         )
     }
 }
